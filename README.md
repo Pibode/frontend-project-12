@@ -3,10 +3,10 @@
 
 # Аналог Slack-чата
 
-Упрощенная версия Slack-чата, разработанная в рамках учебного проекта на Хекслете.
+Упрощенная версия Slack-чата.
 
 ## Демо
-[Ссылка на задеплоенное приложение](https://frontend-project-12.onrender.com)
+https://frontend-project-12-u635.onrender.com
 
 ## Технологии
 - React
@@ -14,7 +14,6 @@
 - @hexlet/chat-server
 
 ## Запуск проекта локально
-```bash
 make install
 make build
 make start
