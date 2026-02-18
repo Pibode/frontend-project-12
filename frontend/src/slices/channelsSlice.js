@@ -53,6 +53,12 @@ const channelsSlice = createSlice({
         message.body = message.text;
       }
 
+      // ПРОВЕРКА НА ДУБЛИКАТЫ: не добавляем, если уже есть такое сообщение
+      const exists = state.messages.some((msg) => msg.id === message.id);
+      if (exists) {
+        return; // Выходим, не добавляя дубликат
+      }
+
       // Добавляем сообщение в список
       state.messages.push(message);
 
@@ -67,7 +73,12 @@ const channelsSlice = createSlice({
       });
     },
     addChannel: (state, action) => {
-      state.channels.push(action.payload);
+      // Проверка на дубликаты для каналов
+      const channel = action.payload;
+      const exists = state.channels.some((ch) => ch.id === channel.id);
+      if (!exists) {
+        state.channels.push(channel);
+      }
     },
     renameChannel: (state, action) => {
       const { id, name } = action.payload;

@@ -5,6 +5,7 @@ import { useNavigate } from 'react-router-dom';
 import { Button, Spinner } from 'react-bootstrap';
 import { useAuth } from '../contexts/AuthContext';
 import { fetchChannels, fetchMessages } from '../slices/channelsSlice';
+import useSocket from '../hooks/useSocket'; 
 import ChannelsList from '../components/ChannelsList';
 import MessagesList from '../components/MessagesList';
 import MessageForm from '../components/MessageForm';
@@ -14,6 +15,9 @@ const ChatPage = () => {
   const navigate = useNavigate();
   const { logout } = useAuth();
   const { loading, error, currentChannelId, channels } = useSelector((state) => state.channels);
+  
+  // Активируем сокет-подписки
+  useSocket();
 
   useEffect(() => {
     Promise.all([
