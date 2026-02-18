@@ -5,25 +5,29 @@ import { useNavigate } from 'react-router-dom';
 import { Button, Spinner } from 'react-bootstrap';
 import { useAuth } from '../contexts/AuthContext';
 import { fetchChannels, fetchMessages } from '../slices/channelsSlice';
-import useSocket from '../hooks/useSocket'; 
+import useSocket from '../hooks/useSocket';
+import useChannelModals from '../hooks/useChannelModals';
 import ChannelsList from '../components/ChannelsList';
 import MessagesList from '../components/MessagesList';
 import MessageForm from '../components/MessageForm';
+import AddChannelModal from '../components/modals/AddChannelModal';
+import RenameChannelModal from '../components/modals/RenameChannelModal';
+import RemoveChannelModal from '../components/modals/RemoveChannelModal';
 
 const ChatPage = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const { logout } = useAuth();
-  const { loading, error, currentChannelId, channels } = useSelector((state) => state.channels);
-  
+  const { loading, error, currentChannelId, channels, modals } = useSelector(
+    (state) => state.channels
+  );
+
   // Активируем сокет-подписки
   useSocket();
+  const { modalType } = useChannelModals();
 
   useEffect(() => {
-    Promise.all([
-      dispatch(fetchChannels()),
-      dispatch(fetchMessages()),
-    ]);
+    Promise.all([dispatch(fetchChannels()), dispatch(fetchMessages())]);
   }, [dispatch]);
 
   const handleLogout = () => {
@@ -31,7 +35,9 @@ const ChatPage = () => {
     navigate('/login');
   };
 
-  const currentChannel = channels.find(ch => Number(ch.id) === Number(currentChannelId));
+  const currentChannel = channels.find(
+    (ch) => Number(ch.id) === Number(currentChannelId)
+  );
 
   if (loading) {
     return (
@@ -56,21 +62,26 @@ const ChatPage = () => {
     <div className="container-fluid h-100">
       <div className="row h-100">
         <ChannelsList />
-        
+
         <div className="col-8 d-flex flex-column h-100 p-0">
           <div className="p-3 border-bottom d-flex justify-content-between align-items-center">
-            <h5 className="mb-0">
-              Канал: #{currentChannel ? currentChannel.name : 'не выбран'}
+            <h5 className="mb-0 text-truncate" style={{ maxWidth: '300px' }}>
+              # {currentChannel ? currentChannel.name : 'не выбран'}
             </h5>
             <Button variant="outline-danger" size="sm" onClick={handleLogout}>
               Выйти
             </Button>
           </div>
-          
+
           <MessagesList />
           <MessageForm />
         </div>
       </div>
+
+      {/* Модальные окна */}
+      {modalType === 'adding' && <AddChannelModal />}
+      {modalType === 'renaming' && <RenameChannelModal />}
+      {modalType === 'removing' && <RemoveChannelModal />}
     </div>
   );
 };
