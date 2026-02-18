@@ -11,10 +11,10 @@ export const AuthProvider = ({ children }) => {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    // Проверяем наличие токена при загрузке
     const token = localStorage.getItem('token');
-    if (token) {
-      setUser({ token });
+    const username = localStorage.getItem('username');
+    if (token && username) {
+      setUser({ token, username });
     }
     setLoading(false);
   }, []);
@@ -25,38 +25,40 @@ export const AuthProvider = ({ children }) => {
         username,
         password,
       });
-      
+
       const { token } = response.data;
       localStorage.setItem('token', token);
-      setUser({ token });
-      
+      localStorage.setItem('username', username);
+      setUser({ token, username });
+
       return { success: true };
     } catch (error) {
       if (error.response?.status === 401) {
-        return { 
-          success: false, 
-          error: 'Неверные имя пользователя или пароль' 
+        return {
+          success: false,
+          error: 'Неверные имя пользователя или пароль'
         };
       }
-      return { 
-        success: false, 
-        error: 'Ошибка сети. Попробуйте позже.' 
+      return {
+        success: false,
+        error: 'Ошибка сети. Попробуйте позже.'
       };
     }
   };
 
   const logout = () => {
     localStorage.removeItem('token');
+    localStorage.removeItem('username');
     setUser(null);
   };
 
   return (
-    <AuthContext.Provider value={{ 
-      user, 
+    <AuthContext.Provider value={{
+      user,
       loading,
-      login, 
+      login,
       logout,
-      isAuthenticated: !!user 
+      isAuthenticated: !!user
     }}>
       {children}
     </AuthContext.Provider>
