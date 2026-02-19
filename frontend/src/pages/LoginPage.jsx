@@ -2,20 +2,20 @@
 import { useFormik } from 'formik';
 import { useNavigate, Link, useLocation } from 'react-router-dom';
 import { Alert, Container, Row, Col, Card, Form, Button } from 'react-bootstrap';
+import { useTranslation } from 'react-i18next';
 import { useAuth } from '../contexts/AuthContext';
 import { useState, useEffect } from 'react';
 
 const LoginPage = () => {
+  const { t } = useTranslation();
   const navigate = useNavigate();
   const location = useLocation();
   const { login } = useAuth();
   const [authError, setAuthError] = useState(null);
   const [successMessage, setSuccessMessage] = useState(location.state?.message || null);
 
-  // Очищаем сообщение из state после прочтения
   useEffect(() => {
     if (location.state?.message) {
-      // Убираем сообщение из истории, чтобы оно не появлялось при обновлении
       window.history.replaceState({}, document.title);
     }
   }, [location]);
@@ -34,7 +34,9 @@ const LoginPage = () => {
       if (result.success) {
         navigate('/');
       } else {
-        setAuthError(result.error);
+        setAuthError(result.error === 'Неверные имя пользователя или пароль' 
+          ? t('login.errors.invalid') 
+          : t('login.errors.network'));
       }
 
       setSubmitting(false);
@@ -47,7 +49,7 @@ const LoginPage = () => {
         <Col xs={12} md={6}>
           <Card className="shadow-sm">
             <Card.Body className="p-5">
-              <h2 className="text-center mb-4">Войти</h2>
+              <h2 className="text-center mb-4">{t('login.title')}</h2>
 
               {successMessage && (
                 <Alert variant="success" className="mb-3">
@@ -63,7 +65,7 @@ const LoginPage = () => {
 
               <Form onSubmit={formik.handleSubmit}>
                 <Form.Group className="mb-3">
-                  <Form.Label>Имя пользователя</Form.Label>
+                  <Form.Label>{t('login.username')}</Form.Label>
                   <Form.Control
                     type="text"
                     name="username"
@@ -71,13 +73,13 @@ const LoginPage = () => {
                     onChange={formik.handleChange}
                     onBlur={formik.handleBlur}
                     disabled={formik.isSubmitting}
-                    placeholder="Ваше имя"
+                    placeholder={t('login.username')}
                     autoFocus
                   />
                 </Form.Group>
 
                 <Form.Group className="mb-4">
-                  <Form.Label>Пароль</Form.Label>
+                  <Form.Label>{t('login.password')}</Form.Label>
                   <Form.Control
                     type="password"
                     name="password"
@@ -85,7 +87,7 @@ const LoginPage = () => {
                     onChange={formik.handleChange}
                     onBlur={formik.handleBlur}
                     disabled={formik.isSubmitting}
-                    placeholder="Пароль"
+                    placeholder={t('login.password')}
                   />
                 </Form.Group>
 
@@ -95,18 +97,18 @@ const LoginPage = () => {
                   className="w-100 mb-3"
                   disabled={formik.isSubmitting}
                 >
-                  {formik.isSubmitting ? 'Вход...' : 'Войти'}
+                  {formik.isSubmitting ? t('login.submitting') : t('login.submit')}
                 </Button>
 
                 <div className="text-center">
-                  <span className="text-muted">Нет аккаунта? </span>
-                  <Link to="/signup">Регистрация</Link>
+                  <span className="text-muted">{t('login.noAccount')} </span>
+                  <Link to="/signup">{t('login.signup')}</Link>
                 </div>
               </Form>
 
               <div className="mt-3 text-muted small text-center">
-                <p className="mb-1">Для теста используйте:</p>
-                <p className="mb-0">username: admin, password: admin</p>
+                <p className="mb-1">{t('login.testCredentials')}</p>
+                <p className="mb-0">{t('login.username')}: admin, {t('login.password')}: admin</p>
               </div>
             </Card.Body>
           </Card>

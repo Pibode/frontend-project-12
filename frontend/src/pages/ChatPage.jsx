@@ -2,6 +2,7 @@
 import { useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { Spinner } from 'react-bootstrap';
+import { useTranslation } from 'react-i18next';
 import { fetchChannels, fetchMessages } from '../slices/channelsSlice';
 import useSocket from '../hooks/useSocket';
 import useChannelModals from '../hooks/useChannelModals';
@@ -13,12 +14,12 @@ import RenameChannelModal from '../components/modals/RenameChannelModal';
 import RemoveChannelModal from '../components/modals/RemoveChannelModal';
 
 const ChatPage = () => {
+  const { t } = useTranslation();
   const dispatch = useDispatch();
   const { loading, error, currentChannelId, channels } = useSelector(
     (state) => state.channels
   );
 
-  // Активируем сокет-подписки
   useSocket();
   const { modalType } = useChannelModals();
 
@@ -42,7 +43,7 @@ const ChatPage = () => {
     return (
       <div className="container mt-5">
         <div className="alert alert-danger">
-          Ошибка загрузки данных: {error}
+          {t('chat.errors.loadData', { error })}
         </div>
       </div>
     );
@@ -56,7 +57,9 @@ const ChatPage = () => {
         <div className="col-8 d-flex flex-column h-100 p-0">
           <div className="p-3 border-bottom">
             <h5 className="mb-0 text-truncate">
-              # {currentChannel ? currentChannel.name : 'не выбран'}
+              {t('chat.currentChannel', { 
+                channelName: currentChannel ? currentChannel.name : t('chat.noChannel') 
+              })}
             </h5>
           </div>
 
@@ -65,7 +68,6 @@ const ChatPage = () => {
         </div>
       </div>
 
-      {/* Модальные окна */}
       {modalType === 'adding' && <AddChannelModal />}
       {modalType === 'renaming' && <RenameChannelModal />}
       {modalType === 'removing' && <RemoveChannelModal />}

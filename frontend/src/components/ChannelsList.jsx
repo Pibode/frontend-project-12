@@ -2,11 +2,13 @@
 import { useDispatch, useSelector } from 'react-redux';
 import { Button, ListGroup, Badge } from 'react-bootstrap';
 import { Plus } from 'react-bootstrap-icons';
+import { useTranslation } from 'react-i18next';
 import { setCurrentChannel } from '../slices/channelsSlice';
 import ChannelMenu from './ChannelMenu';
 import useChannelModals from '../hooks/useChannelModals';
 
 const ChannelsList = () => {
+  const { t } = useTranslation();
   const dispatch = useDispatch();
   const { handleOpenAddModal } = useChannelModals();
   const channels = useSelector((state) => state.channels.channels);
@@ -25,17 +27,17 @@ const ChannelsList = () => {
   return (
     <div className="col-4 border-end vh-100 p-0 d-flex flex-column">
       <div className="p-3 border-bottom d-flex justify-content-between align-items-center">
-        <h5 className="mb-0">Каналы</h5>
-        <Button 
-          variant="outline-primary" 
-          size="sm" 
+        <h5 className="mb-0">{t('chat.channels')}</h5>
+        <Button
+          variant="outline-primary"
+          size="sm"
           onClick={handleOpenAddModal}
-          title="Создать новый канал"
+          title={t('chat.addChannel')}
         >
           <Plus size={16} />
         </Button>
       </div>
-      
+
       <ListGroup variant="flush" className="overflow-auto flex-grow-1">
         {channels.map((channel) => (
           <ListGroup.Item

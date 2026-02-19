@@ -1,0 +1,103 @@
+{
+  "header": {
+    "title": "Hexlet Chat",
+    "logout": "Logout"
+  },
+  "login": {
+    "title": "Login",
+    "username": "Username",
+    "password": "Password",
+    "submit": "Login",
+    "submitting": "Logging in...",
+    "noAccount": "No account?",
+    "signup": "Sign up",
+    "testCredentials": "For test use:",
+    "admin": "admin",
+    "errors": {
+      "invalid": "Invalid username or password",
+      "network": "Network error. Please try again later."
+    }
+  },
+  "signup": {
+    "title": "Sign up",
+    "username": "Username",
+    "password": "Password",
+    "confirmPassword": "Confirm password",
+    "submit": "Register",
+    "submitting": "Registering...",
+    "haveAccount": "Already have an account?",
+    "login": "Login",
+    "usernamePlaceholder": "3 to 20 characters",
+    "passwordPlaceholder": "At least 6 characters",
+    "confirmPlaceholder": "Repeat password",
+    "errors": {
+      "usernameMinMax": "3 to 20 characters",
+      "usernameRequired": "Required field",
+      "passwordMin": "At least 6 characters",
+      "passwordRequired": "Required field",
+      "confirmRequired": "Required field",
+      "passwordsMustMatch": "Passwords must match",
+      "userExists": "User with this username already exists",
+      "network": "Network error. Please try again later."
+    },
+    "success": "Registration successful! You can now log in."
+  },
+  "chat": {
+    "channels": "Channels",
+    "messages": "Messages",
+    "addChannel": "Create new channel",
+    "noMessages": "No messages yet. Be the first!",
+    "messagePlaceholder": "Enter message...",
+    "chooseChannel": "Select a channel first",
+    "offline": "No internet connection. Messages will not be sent.",
+    "sending": "Sending...",
+    "send": "Send",
+    "currentChannel": "# {{channelName}}",
+    "noChannel": "not selected",
+    "loading": "Loading...",
+    "errors": {
+      "loadData": "Error loading data: {{error}}",
+      "tryAgain": "Logout and try again",
+      "messageTimeout": "Server not responding. Please try again later.",
+      "sessionExpired": "Session expired. Please login again.",
+      "serverError": "Server error. Please try again later.",
+      "connection": "Failed to send message. Check your connection."
+    }
+  },
+  "modals": {
+    "add": {
+      "title": "Add channel",
+      "label": "Channel name",
+      "placeholder": "e.g.: general",
+      "cancel": "Cancel",
+      "submit": "Create channel",
+      "submitting": "Creating..."
+    },
+    "rename": {
+      "title": "Rename channel",
+      "label": "New channel name",
+      "cancel": "Cancel",
+      "submit": "Rename",
+      "submitting": "Saving..."
+    },
+    "remove": {
+      "title": "Delete channel",
+      "confirm": "Are you sure you want to delete channel",
+      "warning": "All messages in this channel will be permanently deleted.",
+      "cancel": "Cancel",
+      "submit": "Delete channel",
+      "submitting": "Deleting..."
+    },
+    "errors": {
+      "minMax": "3 to 20 characters",
+      "required": "Required field",
+      "unique": "Channel with this name already exists"
+    }
+  },
+  "notFound": {
+    "title": "404",
+    "header": "Page not found",
+    "message": "Sorry, the page you are looking for does not exist.",
+    "backHome": "Back to home"
+  }
+}

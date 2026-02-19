@@ -4,26 +4,28 @@ import { useNavigate, Link } from 'react-router-dom';
 import { Form, Button, Alert, Container, Row, Col, Card } from 'react-bootstrap';
 import { useFormik } from 'formik';
 import * as yup from 'yup';
+import { useTranslation } from 'react-i18next';
 import axios from 'axios';
 
 const SignupPage = () => {
+  const { t } = useTranslation();
   const navigate = useNavigate();
   const [authError, setAuthError] = useState(null);
 
   const validationSchema = yup.object({
     username: yup
       .string()
-      .min(3, 'От 3 до 20 символов')
-      .max(20, 'От 3 до 20 символов')
-      .required('Обязательное поле'),
+      .min(3, t('signup.errors.usernameMinMax'))
+      .max(20, t('signup.errors.usernameMinMax'))
+      .required(t('signup.errors.usernameRequired')),
     password: yup
       .string()
-      .min(6, 'Не менее 6 символов')
-      .required('Обязательное поле'),
+      .min(6, t('signup.errors.passwordMin'))
+      .required(t('signup.errors.passwordRequired')),
     confirmPassword: yup
       .string()
-      .oneOf([yup.ref('password'), null], 'Пароли должны совпадать')
-      .required('Обязательное поле'),
+      .oneOf([yup.ref('password'), null], t('signup.errors.passwordsMustMatch'))
+      .required(t('signup.errors.confirmRequired')),
   });
 
   const formik = useFormik({
@@ -42,16 +44,14 @@ const SignupPage = () => {
           password: values.password,
         });
         
-        // После успешной регистрации перенаправляем на страницу входа
-        // (пользователь должен войти с новыми данными)
         navigate('/login', { 
-          state: { message: 'Регистрация прошла успешно! Теперь можно войти.' }
+          state: { message: t('signup.success') }
         });
       } catch (err) {
         if (err.response?.status === 409) {
-          setAuthError('Пользователь с таким именем уже существует');
+          setAuthError(t('signup.errors.userExists'));
         } else {
-          setAuthError('Ошибка сети. Попробуйте позже.');
+          setAuthError(t('signup.errors.network'));
         }
         console.error('Signup error:', err);
       } finally {
@@ -66,7 +66,7 @@ const SignupPage = () => {
         <Col xs={12} md={6}>
           <Card className="shadow-sm">
             <Card.Body className="p-5">
-              <h2 className="text-center mb-4">Регистрация</h2>
+              <h2 className="text-center mb-4">{t('signup.title')}</h2>
               
               {authError && (
                 <Alert variant="danger" className="mb-3">
@@ -76,7 +76,7 @@ const SignupPage = () => {
               
               <Form onSubmit={formik.handleSubmit}>
                 <Form.Group className="mb-3">
-                  <Form.Label>Имя пользователя</Form.Label>
+                  <Form.Label>{t('signup.username')}</Form.Label>
                   <Form.Control
                     type="text"
                     name="username"
@@ -85,7 +85,7 @@ const SignupPage = () => {
                     onBlur={formik.handleBlur}
                     isInvalid={formik.touched.username && formik.errors.username}
                     disabled={formik.isSubmitting}
-                    placeholder="От 3 до 20 символов"
+                    placeholder={t('signup.usernamePlaceholder')}
                     autoFocus
                   />
                   <Form.Control.Feedback type="invalid">
@@ -94,7 +94,7 @@ const SignupPage = () => {
                 </Form.Group>
 
                 <Form.Group className="mb-3">
-                  <Form.Label>Пароль</Form.Label>
+                  <Form.Label>{t('signup.password')}</Form.Label>
                   <Form.Control
                     type="password"
                     name="password"
@@ -103,7 +103,7 @@ const SignupPage = () => {
                     onBlur={formik.handleBlur}
                     isInvalid={formik.touched.password && formik.errors.password}
                     disabled={formik.isSubmitting}
-                    placeholder="Не менее 6 символов"
+                    placeholder={t('signup.passwordPlaceholder')}
                   />
                   <Form.Control.Feedback type="invalid">
                     {formik.errors.password}
@@ -111,7 +111,7 @@ const SignupPage = () => {
                 </Form.Group>
 
                 <Form.Group className="mb-4">
-                  <Form.Label>Подтвердите пароль</Form.Label>
+                  <Form.Label>{t('signup.confirmPassword')}</Form.Label>
                   <Form.Control
                     type="password"
                     name="confirmPassword"
@@ -120,7 +120,7 @@ const SignupPage = () => {
                     onBlur={formik.handleBlur}
                     isInvalid={formik.touched.confirmPassword && formik.errors.confirmPassword}
                     disabled={formik.isSubmitting}
-                    placeholder="Повторите пароль"
+                    placeholder={t('signup.confirmPlaceholder')}
                   />
                   <Form.Control.Feedback type="invalid">
                     {formik.errors.confirmPassword}
@@ -133,12 +133,12 @@ const SignupPage = () => {
                   className="w-100 mb-3"
                   disabled={formik.isSubmitting}
                 >
-                  {formik.isSubmitting ? 'Регистрация...' : 'Зарегистрироваться'}
+                  {formik.isSubmitting ? t('signup.submitting') : t('signup.submit')}
                 </Button>
                 
                 <div className="text-center">
-                  <span className="text-muted">Уже есть аккаунт? </span>
-                  <Link to="/login">Войти</Link>
+                  <span className="text-muted">{t('signup.haveAccount')} </span>
+                  <Link to="/login">{t('signup.login')}</Link>
                 </div>
               </Form>
             </Card.Body>
