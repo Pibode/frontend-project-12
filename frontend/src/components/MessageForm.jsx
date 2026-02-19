@@ -1,8 +1,9 @@
 // frontend/src/components/MessageForm.jsx
 import { useState, useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { Form, Button, InputGroup, Alert, Spinner } from 'react-bootstrap';
+import { Form, Button, InputGroup, Spinner } from 'react-bootstrap';
 import { useTranslation } from 'react-i18next';
+import { toast } from 'react-toastify';
 import { addMessage } from '../slices/channelsSlice';
 import { useAuth } from '../contexts/AuthContext';
 import axios from 'axios';
@@ -11,15 +12,21 @@ const MessageForm = () => {
   const { t } = useTranslation();
   const [text, setText] = useState('');
   const [sending, setSending] = useState(false);
-  const [error, setError] = useState(null);
   const [isOnline, setIsOnline] = useState(navigator.onLine);
   const dispatch = useDispatch();
   const { user } = useAuth();
   const currentChannelId = useSelector((state) => state.channels.currentChannelId);
 
   useEffect(() => {
-    const handleOnline = () => setIsOnline(true);
-    const handleOffline = () => setIsOnline(false);
+    const handleOnline = () => {
+      setIsOnline(true);
+      toast.success('🔄 ' + t('chat.online'), { autoClose: 2000 });
+    };
+    
+    const handleOffline = () => {
+      setIsOnline(false);
+      toast.warning('📡 ' + t('chat.offline'), { autoClose: 5000 });
+    };
 
     window.addEventListener('online', handleOnline);
     window.addEventListener('offline', handleOffline);
@@ -28,7 +35,7 @@ const MessageForm = () => {
       window.removeEventListener('online', handleOnline);
       window.removeEventListener('offline', handleOffline);
     };
-  }, []);
+  }, [t]);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -37,7 +44,6 @@ const MessageForm = () => {
     const messageText = text.trim();
     setText('');
     setSending(true);
-    setError(null);
 
     try {
       const response = await axios.post(
@@ -59,15 +65,15 @@ const MessageForm = () => {
       setText(messageText);
 
       if (err.code === 'ECONNABORTED') {
-        setError(t('chat.errors.messageTimeout'));
+        toast.error(t('chat.errors.messageTimeout'));
       } else if (err.response?.status === 401) {
-        setError(t('chat.errors.sessionExpired'));
+        toast.error(t('chat.errors.sessionExpired'));
       } else if (err.response?.status === 500) {
-        setError(t('chat.errors.serverError'));
+        toast.error(t('chat.errors.serverError'));
       } else if (!isOnline) {
-        setError(t('chat.errors.connection'));
+        toast.error(t('chat.errors.connection'));
       } else {
-        setError(t('chat.errors.connection'));
+        toast.error(t('chat.errors.connection'));
       }
     } finally {
       setSending(false);
@@ -76,23 +82,6 @@ const MessageForm = () => {
 
   return (
     <div className="p-3 border-top">
-      {!isOnline && (
-        <Alert variant="warning" className="mb-3 py-2">
-          <small>⚠️ {t('chat.offline')}</small>
-        </Alert>
-      )}
-
-      {error && (
-        <Alert
-          variant="danger"
-          className="mb-3 py-2"
-          dismissible
-          onClose={() => setError(null)}
-        >
-          {error}
-        </Alert>
-      )}
-
       <Form onSubmit={handleSubmit}>
         <InputGroup>
           <Form.Control

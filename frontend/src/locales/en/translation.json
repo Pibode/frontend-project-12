@@ -50,6 +50,7 @@
     "messagePlaceholder": "Enter message...",
     "chooseChannel": "Select a channel first",
     "offline": "No internet connection. Messages will not be sent.",
+    "online": "Connection restored",
     "sending": "Sending...",
     "send": "Send",
     "currentChannel": "# {{channelName}}",
@@ -61,7 +62,8 @@
       "messageTimeout": "Server not responding. Please try again later.",
       "sessionExpired": "Session expired. Please login again.",
       "serverError": "Server error. Please try again later.",
-      "connection": "Failed to send message. Check your connection."
+      "connection": "Failed to send message. Check your connection.",
+      "networkError": "Network error. Check your internet connection."
     }
   },
   "modals": {
@@ -99,5 +101,17 @@
     "header": "Page not found",
     "message": "Sorry, the page you are looking for does not exist.",
     "backHome": "Back to home"
+  },
+  "toasts": {
+    "channel": {
+      "created": "Channel successfully created",
+      "renamed": "Channel successfully renamed",
+      "removed": "Channel successfully deleted"
+    },
+    "errors": {
+      "network": "Network error. Check your connection.",
+      "loading": "Failed to load data. Please try again later.",
+      "offline": "No internet connection"
+    }
   }
 }

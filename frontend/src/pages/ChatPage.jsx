@@ -3,6 +3,7 @@ import { useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { Spinner } from 'react-bootstrap';
 import { useTranslation } from 'react-i18next';
+import { toast } from 'react-toastify';
 import { fetchChannels, fetchMessages } from '../slices/channelsSlice';
 import useSocket from '../hooks/useSocket';
 import useChannelModals from '../hooks/useChannelModals';
@@ -24,8 +25,26 @@ const ChatPage = () => {
   const { modalType } = useChannelModals();
 
   useEffect(() => {
-    Promise.all([dispatch(fetchChannels()), dispatch(fetchMessages())]);
+    const loadData = async () => {
+      try {
+        await Promise.all([
+          dispatch(fetchChannels()).unwrap(),
+          dispatch(fetchMessages()).unwrap(),
+        ]);
+      } catch (err) {
+        // Ошибка уже обработана в slice через toast
+        console.error('Failed to load data:', err);
+      }
+    };
+
+    loadData();
   }, [dispatch]);
+
+  useEffect(() => {
+    if (error) {
+      toast.error(t('chat.errors.loadData', { error }));
+    }
+  }, [error, t]);
 
   const currentChannel = channels.find(
     (ch) => Number(ch.id) === Number(currentChannelId)
@@ -35,16 +54,6 @@ const ChatPage = () => {
     return (
       <div className="d-flex justify-content-center align-items-center vh-100">
         <Spinner animation="border" variant="primary" />
-      </div>
-    );
-  }
-
-  if (error) {
-    return (
-      <div className="container mt-5">
-        <div className="alert alert-danger">
-          {t('chat.errors.loadData', { error })}
-        </div>
       </div>
     );
   }

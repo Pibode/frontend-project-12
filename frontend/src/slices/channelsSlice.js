@@ -1,5 +1,7 @@
 // frontend/src/slices/channelsSlice.js
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
+import { toast } from "react-toastify";
+import i18n from "../lib/i18n";
 import axios from "axios";
 
 // Настройка axios для отправки токена
@@ -15,6 +17,26 @@ axiosInstance.interceptors.request.use((config) => {
   return config;
 });
 
+// Обработка сетевых ошибок
+const handleNetworkError = (error) => {
+  if (!navigator.onLine) {
+    toast.error(i18n.t("toasts.errors.offline"));
+  } else if (error.code === "ECONNABORTED") {
+    toast.error(i18n.t("chat.errors.messageTimeout"));
+  } else if (error.response?.status === 401) {
+    toast.error(i18n.t("chat.errors.sessionExpired"));
+  } else if (error.response?.status >= 500) {
+    toast.error(i18n.t("chat.errors.serverError"));
+  } else {
+    toast.error(i18n.t("toasts.errors.network"));
+  }
+};
+
+// Функция для получения текущего пользователя
+const getCurrentUsername = () => {
+  return localStorage.getItem("username");
+};
+
 // Async thunks для работы с каналами
 export const addChannel = createAsyncThunk(
   "channels/addChannel",
@@ -23,6 +45,7 @@ export const addChannel = createAsyncThunk(
       const response = await axiosInstance.post("/channels", { name });
       return response.data;
     } catch (error) {
+      handleNetworkError(error);
       return rejectWithValue(error.response?.data || error.message);
     }
   },
@@ -35,6 +58,7 @@ export const renameChannel = createAsyncThunk(
       const response = await axiosInstance.patch(`/channels/${id}`, { name });
       return response.data;
     } catch (error) {
+      handleNetworkError(error);
       return rejectWithValue(error.response?.data || error.message);
     }
   },
@@ -47,6 +71,7 @@ export const removeChannel = createAsyncThunk(
       await axiosInstance.delete(`/channels/${id}`);
       return id;
     } catch (error) {
+      handleNetworkError(error);
       return rejectWithValue(error.response?.data || error.message);
     }
   },
@@ -54,17 +79,27 @@ export const removeChannel = createAsyncThunk(
 
 export const fetchChannels = createAsyncThunk(
   "channels/fetchChannels",
-  async () => {
-    const response = await axiosInstance.get("/channels");
-    return response.data;
+  async (_, { rejectWithValue }) => {
+    try {
+      const response = await axiosInstance.get("/channels");
+      return response.data;
+    } catch (error) {
+      handleNetworkError(error);
+      return rejectWithValue(error.response?.data || error.message);
+    }
   },
 );
 
 export const fetchMessages = createAsyncThunk(
   "channels/fetchMessages",
-  async () => {
-    const response = await axiosInstance.get("/messages");
-    return response.data;
+  async (_, { rejectWithValue }) => {
+    try {
+      const response = await axiosInstance.get("/messages");
+      return response.data;
+    } catch (error) {
+      handleNetworkError(error);
+      return rejectWithValue(error.response?.data || error.message);
+    }
   },
 );
 
@@ -78,7 +113,7 @@ const channelsSlice = createSlice({
     error: null,
     modals: {
       isOpen: false,
-      type: null, // 'adding', 'renaming', 'removing'
+      type: null,
       channelId: null,
     },
   },
@@ -86,7 +121,6 @@ const channelsSlice = createSlice({
     setCurrentChannel: (state, action) => {
       state.currentChannelId = action.payload;
     },
-    // Управление модальными окнами
     openModal: (state, action) => {
       state.modals = {
         isOpen: true,
@@ -101,12 +135,20 @@ const channelsSlice = createSlice({
         channelId: null,
       };
     },
-    // Для сокет-событий (оптимистичные обновления)
     socketAddChannel: (state, action) => {
       const channel = action.payload;
       const exists = state.channels.some((ch) => ch.id === channel.id);
       if (!exists) {
         state.channels.push(channel);
+
+        // Проверяем, не является ли это нашим собственным действием
+        const currentUser = getCurrentUsername();
+
+        setTimeout(() => {
+          if (!document.querySelector(".Toastify__toast--success")) {
+            toast.info(i18n.t("toasts.channel.created"));
+          }
+        }, 100);
       }
     },
     socketRenameChannel: (state, action) => {
@@ -114,28 +156,41 @@ const channelsSlice = createSlice({
       const channel = state.channels.find((ch) => ch.id === id);
       if (channel) {
         channel.name = name;
+
+        // Аналогичная проверка
+        setTimeout(() => {
+          if (!document.querySelector(".Toastify__toast--success")) {
+            toast.info(i18n.t("toasts.channel.renamed"));
+          }
+        }, 100);
       }
     },
     socketRemoveChannel: (state, action) => {
       const channelId = action.payload.id || action.payload;
+      const channelName = state.channels.find(
+        (ch) => ch.id === channelId,
+      )?.name;
 
-      // Удаляем канал
       state.channels = state.channels.filter((ch) => ch.id !== channelId);
-
-      // Удаляем сообщения канала
       state.messages = state.messages.filter(
         (msg) => Number(msg.channelId) !== Number(channelId),
       );
 
-      // Если удаляем текущий канал, переключаемся на general
       if (Number(state.currentChannelId) === Number(channelId)) {
         const generalChannel = state.channels.find(
           (ch) => ch.name === "general",
         );
         state.currentChannelId = generalChannel?.id || null;
       }
+
+      if (channelName) {
+        setTimeout(() => {
+          if (!document.querySelector(".Toastify__toast--success")) {
+            toast.info(i18n.t("toasts.channel.removed"));
+          }
+        }, 100);
+      }
     },
-    // Обычные редьюсеры (без сетевых запросов)
     addMessage: (state, action) => {
       const message = action.payload;
       if (message.text && !message.body) {
@@ -156,7 +211,6 @@ const channelsSlice = createSlice({
   },
   extraReducers: (builder) => {
     builder
-      // Загрузка каналов
       .addCase(fetchChannels.pending, (state) => {
         state.loading = true;
         state.error = null;
@@ -171,58 +225,59 @@ const channelsSlice = createSlice({
       })
       .addCase(fetchChannels.rejected, (state, action) => {
         state.loading = false;
-        state.error = action.error.message;
+        state.error = action.payload || action.error.message;
       })
 
-      // Загрузка сообщений
       .addCase(fetchMessages.fulfilled, (state, action) => {
         state.messages = action.payload.map((msg) => ({
           ...msg,
           body: msg.body || msg.text,
         }));
       })
+      .addCase(fetchMessages.rejected, (state, action) => {
+        state.error = action.payload || action.error.message;
+      })
 
-      // Добавление канала
       .addCase(addChannel.pending, (state) => {
         state.error = null;
       })
       .addCase(addChannel.fulfilled, (state, action) => {
-        // Канал уже добавится через сокет, но на всякий случай
         const newChannel = action.payload;
         const exists = state.channels.some((ch) => ch.id === newChannel.id);
         if (!exists) {
           state.channels.push(newChannel);
         }
-        // Переключаемся на новый канал
         state.currentChannelId = newChannel.id;
-        // Закрываем модалку
         state.modals.isOpen = false;
+
+        // Только зеленое уведомление для своих действий
+        toast.success(i18n.t("toasts.channel.created"));
       })
       .addCase(addChannel.rejected, (state, action) => {
         state.error = action.payload || "Ошибка при создании канала";
       })
 
-      // Переименование канала
       .addCase(renameChannel.pending, (state) => {
         state.error = null;
       })
       .addCase(renameChannel.fulfilled, (state, action) => {
-        // Обновление уже придет через сокет
-        // Закрываем модалку
         state.modals.isOpen = false;
+
+        // Только зеленое уведомление для своих действий
+        toast.success(i18n.t("toasts.channel.renamed"));
       })
       .addCase(renameChannel.rejected, (state, action) => {
         state.error = action.payload || "Ошибка при переименовании канала";
       })
 
-      // Удаление канала
       .addCase(removeChannel.pending, (state) => {
         state.error = null;
       })
       .addCase(removeChannel.fulfilled, (state, action) => {
-        // Удаление уже придет через сокет
-        // Закрываем модалку
         state.modals.isOpen = false;
+
+        // Только зеленое уведомление для своих действий
+        toast.success(i18n.t("toasts.channel.removed"));
       })
       .addCase(removeChannel.rejected, (state, action) => {
         state.error = action.payload || "Ошибка при удалении канала";
