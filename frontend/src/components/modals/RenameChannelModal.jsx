@@ -5,8 +5,10 @@ import { Modal, Button, Form } from 'react-bootstrap';
 import { useFormik } from 'formik';
 import * as yup from 'yup';
 import { useTranslation } from 'react-i18next';
+import { toast } from 'react-toastify';
 import { renameChannel } from '../../slices/channelsSlice';
 import useChannelModals from '../../hooks/useChannelModals';
+import { containsProfanity } from '../../utils/profanity';
 
 const RenameChannelModal = () => {
   const { t } = useTranslation();
@@ -17,6 +19,7 @@ const RenameChannelModal = () => {
 
   const currentChannel = channels.find((ch) => ch.id === channelId);
 
+  // Схема валидации с проверкой на нецензурные слова
   const validationSchema = yup.object({
     name: yup
       .string()
@@ -27,6 +30,9 @@ const RenameChannelModal = () => {
         return !channels.some(
           (ch) => ch.name === value && ch.id !== channelId
         );
+      })
+      .test('profanity', t('modals.errors.profanity'), (value) => {
+        return !containsProfanity(value);
       }),
   });
 
@@ -40,6 +46,7 @@ const RenameChannelModal = () => {
         handleCloseModal();
       } catch (error) {
         console.error('Failed to rename channel:', error);
+        toast.error(error.message || t('modals.errors.unique'));
       } finally {
         setSubmitting(false);
       }

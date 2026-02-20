@@ -6,6 +6,7 @@ import { useTranslation } from 'react-i18next';
 import { toast } from 'react-toastify';
 import { addMessage } from '../slices/channelsSlice';
 import { useAuth } from '../contexts/AuthContext';
+import { containsProfanity, cleanProfanity } from '../utils/profanity';
 import axios from 'axios';
 
 const MessageForm = () => {
@@ -22,7 +23,7 @@ const MessageForm = () => {
       setIsOnline(true);
       toast.success('🔄 ' + t('chat.online'), { autoClose: 2000 });
     };
-    
+
     const handleOffline = () => {
       setIsOnline(false);
       toast.warning('📡 ' + t('chat.offline'), { autoClose: 5000 });
@@ -41,7 +42,13 @@ const MessageForm = () => {
     e.preventDefault();
     if (!text.trim() || !currentChannelId || !isOnline) return;
 
-    const messageText = text.trim();
+    // Очищаем текст от нецензурных слов
+    const rawText = text.trim();
+    const cleanText = cleanProfanity(rawText);
+    
+    // Проверяем, были ли замены
+    const wasProfane = rawText !== cleanText;
+    
     setText('');
     setSending(true);
 
@@ -49,7 +56,7 @@ const MessageForm = () => {
       const response = await axios.post(
         '/api/v1/messages',
         {
-          text: messageText,
+          text: cleanText, // Отправляем очищенный текст
           channelId: currentChannelId,
           username: user.username,
         },
@@ -60,9 +67,16 @@ const MessageForm = () => {
       );
 
       dispatch(addMessage(response.data));
+      
+      // Если были замены, показываем уведомление
+      if (wasProfane) {
+        toast.info(t('chat.profanityFiltered'), {
+          autoClose: 3000,
+        });
+      }
     } catch (err) {
       console.error('Ошибка отправки сообщения:', err);
-      setText(messageText);
+      setText(rawText); // Возвращаем оригинальный текст при ошибке
 
       if (err.code === 'ECONNABORTED') {
         toast.error(t('chat.errors.messageTimeout'));

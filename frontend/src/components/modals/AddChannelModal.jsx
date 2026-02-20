@@ -5,8 +5,10 @@ import { Modal, Button, Form } from 'react-bootstrap';
 import { useFormik } from 'formik';
 import * as yup from 'yup';
 import { useTranslation } from 'react-i18next';
+import { toast } from 'react-toastify';
 import { addChannel } from '../../slices/channelsSlice';
 import useChannelModals from '../../hooks/useChannelModals';
+import { containsProfanity } from '../../utils/profanity';
 
 const AddChannelModal = () => {
   const { t } = useTranslation();
@@ -15,6 +17,7 @@ const AddChannelModal = () => {
   const channels = useSelector((state) => state.channels.channels);
   const inputRef = useRef(null);
 
+  // Схема валидации с проверкой на нецензурные слова
   const validationSchema = yup.object({
     name: yup
       .string()
@@ -23,6 +26,9 @@ const AddChannelModal = () => {
       .required(t('modals.errors.required'))
       .test('unique', t('modals.errors.unique'), (value) => {
         return !channels.some((ch) => ch.name === value);
+      })
+      .test('profanity', t('modals.errors.profanity'), (value) => {
+        return !containsProfanity(value);
       }),
   });
 
@@ -36,6 +42,7 @@ const AddChannelModal = () => {
         handleCloseModal();
       } catch (error) {
         console.error('Failed to add channel:', error);
+        toast.error(error.message || t('modals.errors.unique'));
       } finally {
         setSubmitting(false);
       }
