@@ -6,7 +6,6 @@ import useChannelModals from '../hooks/useChannelModals';
 const ChannelMenu = ({ channel }) => {
   const { handleOpenRenameModal, handleOpenRemoveModal } = useChannelModals();
 
-  // Нельзя удалить/переименовать general
   if (channel.name === 'general' || !channel.removable) {
     return null;
   }
@@ -24,9 +23,10 @@ const ChannelMenu = ({ channel }) => {
   return (
     <Dropdown onClick={(e) => e.stopPropagation()}>
       <Dropdown.Toggle 
+        as="span" // Изменяем с button на span
         variant="link" 
         className="text-muted p-0 border-0"
-        style={{ textDecoration: 'none' }}
+        style={{ textDecoration: 'none', cursor: 'pointer' }}
       >
         <ThreeDotsVertical size={16} />
       </Dropdown.Toggle>

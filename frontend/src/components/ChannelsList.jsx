@@ -2,13 +2,11 @@
 import { useDispatch, useSelector } from 'react-redux';
 import { Button, ListGroup, Badge } from 'react-bootstrap';
 import { Plus } from 'react-bootstrap-icons';
-import { useTranslation } from 'react-i18next';
 import { setCurrentChannel } from '../slices/channelsSlice';
 import ChannelMenu from './ChannelMenu';
 import useChannelModals from '../hooks/useChannelModals';
 
 const ChannelsList = () => {
-  const { t } = useTranslation();
   const dispatch = useDispatch();
   const { handleOpenAddModal } = useChannelModals();
   const channels = useSelector((state) => state.channels.channels);
@@ -27,12 +25,12 @@ const ChannelsList = () => {
   return (
     <div className="col-4 border-end vh-100 p-0 d-flex flex-column">
       <div className="p-3 border-bottom d-flex justify-content-between align-items-center">
-        <h5 className="mb-0">{t('chat.channels')}</h5>
+        <h5 className="mb-0">Каналы</h5>
         <Button
           variant="outline-primary"
           size="sm"
           onClick={handleOpenAddModal}
-          title={t('chat.addChannel')}
+          title="Создать новый канал"
         >
           <Plus size={16} />
         </Button>
@@ -48,7 +46,7 @@ const ChannelsList = () => {
             className="d-flex justify-content-between align-items-center"
             style={{ cursor: 'pointer' }}
           >
-            <div className="d-flex align-items-center overflow-hidden">
+            <div className="d-flex align-items-center overflow-hidden flex-grow-1">
               <span className="text-truncate" style={{ maxWidth: '150px' }}>
                 # {truncateName(channel.name)}
               </span>
@@ -56,7 +54,10 @@ const ChannelsList = () => {
                 {getMessagesCount(channel.id)}
               </Badge>
             </div>
-            <ChannelMenu channel={channel} />
+            {/* Оборачиваем меню в div, чтобы не нарушать структуру кнопки */}
+            <div onClick={(e) => e.stopPropagation()}>
+              <ChannelMenu channel={channel} />
+            </div>
           </ListGroup.Item>
         ))}
       </ListGroup>
