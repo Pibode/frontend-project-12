@@ -2,6 +2,7 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import { toast } from "react-toastify";
 import i18n from "../lib/i18n";
+import { cleanProfanity } from "../utils/profanity"; // <-- Импортируем фильтр
 import axios from "axios";
 
 // Настройка axios для отправки токена
@@ -37,12 +38,33 @@ const getCurrentUsername = () => {
   return localStorage.getItem("username");
 };
 
+// Функция для фильтрации сообщения
+const filterMessage = (message) => {
+  if (!message) return message;
+
+  const filteredMessage = { ...message };
+
+  // Фильтруем текст сообщения
+  if (filteredMessage.text) {
+    filteredMessage.text = cleanProfanity(filteredMessage.text);
+  }
+  if (filteredMessage.body) {
+    filteredMessage.body = cleanProfanity(filteredMessage.body);
+  }
+
+  return filteredMessage;
+};
+
 // Async thunks для работы с каналами
 export const addChannel = createAsyncThunk(
   "channels/addChannel",
   async (name, { rejectWithValue }) => {
     try {
-      const response = await axiosInstance.post("/channels", { name });
+      // Фильтруем название канала перед отправкой
+      const filteredName = cleanProfanity(name);
+      const response = await axiosInstance.post("/channels", {
+        name: filteredName,
+      });
       return response.data;
     } catch (error) {
       handleNetworkError(error);
@@ -55,7 +77,11 @@ export const renameChannel = createAsyncThunk(
   "channels/renameChannel",
   async ({ id, name }, { rejectWithValue }) => {
     try {
-      const response = await axiosInstance.patch(`/channels/${id}`, { name });
+      // Фильтруем название канала перед отправкой
+      const filteredName = cleanProfanity(name);
+      const response = await axiosInstance.patch(`/channels/${id}`, {
+        name: filteredName,
+      });
       return response.data;
     } catch (error) {
       handleNetworkError(error);
@@ -95,7 +121,9 @@ export const fetchMessages = createAsyncThunk(
   async (_, { rejectWithValue }) => {
     try {
       const response = await axiosInstance.get("/messages");
-      return response.data;
+      // Фильтруем все сообщения при загрузке
+      const filteredMessages = response.data.map(filterMessage);
+      return filteredMessages;
     } catch (error) {
       handleNetworkError(error);
       return rejectWithValue(error.response?.data || error.message);
@@ -192,9 +220,20 @@ const channelsSlice = createSlice({
       }
     },
     addMessage: (state, action) => {
-      const message = action.payload;
+      // Фильтруем сообщение перед добавлением
+      let message = action.payload;
+
+      // Нормализуем и фильтруем
       if (message.text && !message.body) {
         message.body = message.text;
+      }
+
+      // Фильтруем содержимое
+      if (message.body) {
+        message = { ...message, body: cleanProfanity(message.body) };
+      }
+      if (message.text) {
+        message = { ...message, text: cleanProfanity(message.text) };
       }
 
       const exists = state.messages.some((msg) => msg.id === message.id);
@@ -229,6 +268,7 @@ const channelsSlice = createSlice({
       })
 
       .addCase(fetchMessages.fulfilled, (state, action) => {
+        // Сообщения уже отфильтрованы в thunk
         state.messages = action.payload.map((msg) => ({
           ...msg,
           body: msg.body || msg.text,
@@ -250,7 +290,6 @@ const channelsSlice = createSlice({
         state.currentChannelId = newChannel.id;
         state.modals.isOpen = false;
 
-        // Только зеленое уведомление для своих действий
         toast.success(i18n.t("toasts.channel.created"));
       })
       .addCase(addChannel.rejected, (state, action) => {
@@ -263,7 +302,6 @@ const channelsSlice = createSlice({
       .addCase(renameChannel.fulfilled, (state, action) => {
         state.modals.isOpen = false;
 
-        // Только зеленое уведомление для своих действий
         toast.success(i18n.t("toasts.channel.renamed"));
       })
       .addCase(renameChannel.rejected, (state, action) => {
@@ -276,7 +314,6 @@ const channelsSlice = createSlice({
       .addCase(removeChannel.fulfilled, (state, action) => {
         state.modals.isOpen = false;
 
-        // Только зеленое уведомление для своих действий
         toast.success(i18n.t("toasts.channel.removed"));
       })
       .addCase(removeChannel.rejected, (state, action) => {
