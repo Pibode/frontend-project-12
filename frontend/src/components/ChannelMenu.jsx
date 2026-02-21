@@ -1,9 +1,11 @@
 // frontend/src/components/ChannelMenu.jsx
 import { Dropdown } from 'react-bootstrap';
 import { ThreeDotsVertical } from 'react-bootstrap-icons';
+import { useTranslation } from 'react-i18next';
 import useChannelModals from '../hooks/useChannelModals';
 
 const ChannelMenu = ({ channel }) => {
+  const { t } = useTranslation();
   const { handleOpenRenameModal, handleOpenRemoveModal } = useChannelModals();
 
   if (channel.name === 'general' || !channel.removable) {
@@ -22,21 +24,22 @@ const ChannelMenu = ({ channel }) => {
 
   return (
     <Dropdown onClick={(e) => e.stopPropagation()}>
-      <Dropdown.Toggle 
-        as="span" // Изменяем с button на span
-        variant="link" 
+      <Dropdown.Toggle
+        as="span"
+        variant="link"
         className="text-muted p-0 border-0"
         style={{ textDecoration: 'none', cursor: 'pointer' }}
+        aria-label={t('modals.management') || 'Управление каналом'}
       >
         <ThreeDotsVertical size={16} />
       </Dropdown.Toggle>
 
       <Dropdown.Menu>
         <Dropdown.Item onClick={handleRename}>
-          Переименовать
+          {t('modals.rename.submit')}
         </Dropdown.Item>
         <Dropdown.Item onClick={handleRemove} className="text-danger">
-          Удалить
+          {t('modals.remove.submit')}
         </Dropdown.Item>
       </Dropdown.Menu>
     </Dropdown>

@@ -70,6 +70,7 @@
   },
   "modals": {
     "add": {
+      "management": "Channel management",
       "title": "Add channel",
       "label": "Channel name",
       "placeholder": "e.g.: general",
