@@ -7,6 +7,7 @@ import { toast } from 'react-toastify';
 import { fetchChannels, fetchMessages } from '../slices/channelsSlice';
 import useSocket from '../hooks/useSocket';
 import useChannelModals from '../hooks/useChannelModals';
+import { logError } from '../lib/rollbar';
 import ChannelsList from '../components/ChannelsList';
 import MessagesList from '../components/MessagesList';
 import MessageForm from '../components/MessageForm';
@@ -32,7 +33,7 @@ const ChatPage = () => {
           dispatch(fetchMessages()).unwrap(),
         ]);
       } catch (err) {
-        // Ошибка уже обработана в slice через toast
+        logError(err, { component: 'ChatPage', action: 'loadData' });
         console.error('Failed to load data:', err);
       }
     };
@@ -43,6 +44,7 @@ const ChatPage = () => {
   useEffect(() => {
     if (error) {
       toast.error(t('chat.errors.loadData', { error }));
+      logError(new Error(error), { component: 'ChatPage', action: 'errorDisplay' });
     }
   }, [error, t]);
 
@@ -66,8 +68,8 @@ const ChatPage = () => {
         <div className="col-8 d-flex flex-column h-100 p-0">
           <div className="p-3 border-bottom">
             <h5 className="mb-0 text-truncate">
-              {t('chat.currentChannel', { 
-                channelName: currentChannel ? currentChannel.name : t('chat.noChannel') 
+              {t('chat.currentChannel', {
+                channelName: currentChannel ? currentChannel.name : t('chat.noChannel')
               })}
             </h5>
           </div>

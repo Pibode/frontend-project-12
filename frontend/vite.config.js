@@ -16,4 +16,10 @@ export default defineConfig({
       },
     },
   },
+
+  define: {
+    "import.meta.env.VITE_ROLLBAR_ACCESS_TOKEN": JSON.stringify(
+      process.env.VITE_ROLLBAR_ACCESS_TOKEN,
+    ),
+  },
 });

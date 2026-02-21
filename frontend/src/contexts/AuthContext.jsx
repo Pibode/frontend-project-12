@@ -1,7 +1,8 @@
 // frontend/src/contexts/AuthContext.jsx
 import { createContext, useContext, useState, useEffect } from 'react';
 import axios from 'axios';
-import socketService from '../services/socket'; 
+import socketService from '../services/socket';
+import { setRollbarUser, clearRollbarUser, logError } from '../lib/rollbar';
 
 const AuthContext = createContext({});
 
@@ -15,7 +16,10 @@ export const AuthProvider = ({ children }) => {
     const token = localStorage.getItem('token');
     const username = localStorage.getItem('username');
     if (token && username) {
-      setUser({ token, username });
+      const userData = { token, username };
+      setUser(userData);
+      // Устанавливаем пользователя в Rollbar
+      setRollbarUser(userData);
       // Подключаем сокет если есть токен
       socketService.connect(token);
     }
@@ -26,6 +30,7 @@ export const AuthProvider = ({ children }) => {
       const currentToken = localStorage.getItem('token');
       if (!currentToken) {
         socketService.disconnect();
+        clearRollbarUser();
       }
     };
   }, []);
@@ -38,15 +43,22 @@ export const AuthProvider = ({ children }) => {
       });
 
       const { token } = response.data;
+      const userData = { token, username };
+      
       localStorage.setItem('token', token);
       localStorage.setItem('username', username);
-      setUser({ token, username });
+      setUser(userData);
       
+      // Устанавливаем пользователя в Rollbar
+      setRollbarUser(userData);
+
       // Подключаем сокет после успешного входа
       socketService.connect(token);
 
       return { success: true };
     } catch (error) {
+      logError(error, { action: 'login', username });
+      
       if (error.response?.status === 401) {
         return {
           success: false,
@@ -64,6 +76,9 @@ export const AuthProvider = ({ children }) => {
     // Отключаем сокет при выходе
     socketService.disconnect();
     
+    // Очищаем пользователя в Rollbar
+    clearRollbarUser();
+
     localStorage.removeItem('token');
     localStorage.removeItem('username');
     setUser(null);
