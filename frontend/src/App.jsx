@@ -42,7 +42,7 @@ function App() {
           <GlobalErrorHandler>
             <div className="d-flex flex-column h-100">
               <Header />
-              <div className="flex-grow-1">
+              <div className="flex-grow-1 overflow-hidden">
                 <ErrorBoundary
                   fallback={({ error, errorInfo }) => (
                     <div className="container mt-5">

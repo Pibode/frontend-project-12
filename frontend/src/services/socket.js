@@ -9,9 +9,8 @@ class SocketService {
   connect(token) {
     if (this.socket?.connected) return this.socket;
 
-    const url = window.location.origin;
-
-    this.socket = io(url, {
+    // Используем текущий origin для подключения (работает и в dev, и в prod)
+    this.socket = io({
       auth: { token },
       transports: ["websocket", "polling"],
       reconnection: true,

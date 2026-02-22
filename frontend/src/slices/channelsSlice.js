@@ -107,9 +107,12 @@ export const fetchChannels = createAsyncThunk(
   "channels/fetchChannels",
   async (_, { rejectWithValue }) => {
     try {
+      console.log("Fetching channels...");
       const response = await axiosInstance.get("/channels");
+      console.log("Channels response:", response.data);
       return response.data;
     } catch (error) {
+      console.error("Fetch channels error:", error);
       handleNetworkError(error);
       return rejectWithValue(error.response?.data || error.message);
     }
