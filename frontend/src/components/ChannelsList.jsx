@@ -9,11 +9,16 @@ import useChannelModals from '../hooks/useChannelModals';
 const ChannelsList = () => {
   const dispatch = useDispatch();
   const { handleOpenAddModal } = useChannelModals();
-  const channels = useSelector((state) => state.channels.channels);
+  const channels = useSelector((state) => state.channels.channels) || [];
   const currentChannelId = useSelector((state) => state.channels.currentChannelId);
-  const messages = useSelector((state) => state.channels.messages);
+  const messages = useSelector((state) => state.channels.messages) || [];
 
-  console.log('ChannelsList rendered, channels:', channels, 'currentChannelId:', currentChannelId);
+  console.log('ChannelsList rendered:', {
+    channelsCount: channels.length,
+    channels: channels,
+    currentChannelId: currentChannelId,
+    isArray: Array.isArray(channels)
+  });
 
   const getMessagesCount = (channelId) => {
     return messages.filter((msg) => Number(msg.channelId) === Number(channelId)).length;
@@ -40,7 +45,7 @@ const ChannelsList = () => {
       </div>
 
       <div className="overflow-auto flex-grow-1" style={{ minHeight: 0 }}>
-        {channels && channels.length > 0 ? (
+        {channels.length > 0 ? (
           channels.map((channel) => (
             <button
               type="button"

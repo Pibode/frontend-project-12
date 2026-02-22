@@ -28,19 +28,23 @@ const ChatPage = () => {
   useEffect(() => {
     const loadData = async () => {
       try {
-        console.log('Loading channels and messages...');
+        console.log('ChatPage: Loading channels and messages...');
         const channelsResult = await dispatch(fetchChannels()).unwrap();
+        console.log('ChatPage: Channels loaded successfully:', channelsResult);
         const messagesResult = await dispatch(fetchMessages()).unwrap();
-        console.log('Channels loaded:', channelsResult);
-        console.log('Messages loaded:', messagesResult);
+        console.log('ChatPage: Messages loaded successfully:', messagesResult);
       } catch (err) {
-        console.error('Failed to load data:', err);
+        console.error('ChatPage: Failed to load data:', err);
         logError(err, { component: 'ChatPage', action: 'loadData' });
       }
     };
 
     loadData();
   }, [dispatch]);
+
+  useEffect(() => {
+    console.log('ChatPage: channels state updated:', channels);
+  }, [channels]);
 
   useEffect(() => {
     if (error) {
