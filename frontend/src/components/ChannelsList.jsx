@@ -37,24 +37,19 @@ const ChannelsList = () => {
         </Button>
       </div>
 
-      <ListGroup variant="flush" className="overflow-auto flex-grow-1">
+      <div className="overflow-auto flex-grow-1">
         {channels.map((channel) => (
-          <ListGroup.Item
+          <button
             key={channel.id}
-            action
-            active={Number(currentChannelId) === Number(channel.id)}
             onClick={() => dispatch(setCurrentChannel(channel.id))}
-            className="d-flex justify-content-between align-items-center"
+            className={`w-100 d-flex justify-content-between align-items-center p-3 border-0 text-start ${
+              Number(currentChannelId) === Number(channel.id)
+                ? 'bg-light'
+                : 'bg-white'
+            }`}
             style={{ cursor: 'pointer' }}
-            role="button"
-            tabIndex={0}
+            aria-pressed={Number(currentChannelId) === Number(channel.id)}
             aria-label={channel.name}
-            onKeyDown={(e) => {
-              if (e.key === 'Enter' || e.key === ' ') {
-                e.preventDefault();
-                dispatch(setCurrentChannel(channel.id));
-              }
-            }}
           >
             <div className="d-flex align-items-center overflow-hidden flex-grow-1">
               <span className="text-truncate" style={{ maxWidth: '150px' }}>
@@ -67,9 +62,9 @@ const ChannelsList = () => {
             <div onClick={(e) => e.stopPropagation()}>
               <ChannelMenu channel={channel} />
             </div>
-          </ListGroup.Item>
+          </button>
         ))}
-      </ListGroup>
+      </div>
     </div>
   );
 };
