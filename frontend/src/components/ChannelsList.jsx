@@ -23,7 +23,7 @@ const ChannelsList = () => {
   };
 
   return (
-    <div className="col-4 border-end vh-100 p-0 d-flex flex-column">
+    <div className="col-4 border-end vh-100 p-0 d-flex flex-column" style={{ minHeight: 0 }}>
       <div className="p-3 border-bottom d-flex justify-content-between align-items-center">
         <h5 className="mb-0">Каналы</h5>
         <Button
@@ -37,17 +37,22 @@ const ChannelsList = () => {
         </Button>
       </div>
 
-      <div className="overflow-auto flex-grow-1">
+      <div className="overflow-auto flex-grow-1" style={{ minHeight: 0 }}>
         {channels.map((channel) => (
           <button
+            type="button"
             key={channel.id}
             onClick={() => dispatch(setCurrentChannel(channel.id))}
             className={`w-100 d-flex justify-content-between align-items-center p-3 border-0 text-start ${
               Number(currentChannelId) === Number(channel.id)
-                ? 'bg-light'
-                : 'bg-white'
+                ? 'bg-light text-primary'
+                : 'bg-white text-dark'
             }`}
-            style={{ cursor: 'pointer' }}
+            style={{ 
+              cursor: 'pointer',
+              borderBottom: '1px solid #dee2e6',
+              transition: 'background-color 0.2s'
+            }}
             aria-pressed={Number(currentChannelId) === Number(channel.id)}
             aria-label={channel.name}
           >

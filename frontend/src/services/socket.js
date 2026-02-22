@@ -9,10 +9,7 @@ class SocketService {
   connect(token) {
     if (this.socket?.connected) return this.socket;
 
-    const url =
-      process.env.NODE_ENV === "development"
-        ? "http://localhost:5173"
-        : window.location.origin;
+    const url = window.location.origin;
 
     this.socket = io(url, {
       auth: { token },
