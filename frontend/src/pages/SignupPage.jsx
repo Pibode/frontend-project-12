@@ -6,10 +6,12 @@ import { useFormik } from 'formik';
 import * as yup from 'yup';
 import { useTranslation } from 'react-i18next';
 import axios from 'axios';
+import { useAuth } from '../contexts/AuthContext'; 
 
 const SignupPage = () => {
   const { t } = useTranslation();
   const navigate = useNavigate();
+  const { login } = useAuth(); 
   const [authError, setAuthError] = useState(null);
 
   const validationSchema = yup.object({
@@ -37,16 +39,23 @@ const SignupPage = () => {
     validationSchema,
     onSubmit: async (values, { setSubmitting }) => {
       setAuthError(null);
-      
+
       try {
+        // Сначала регистрируем пользователя
         await axios.post('/api/v1/signup', {
           username: values.username,
           password: values.password,
         });
+
+        // Затем автоматически логиним его
+        const loginResult = await login(values.username, values.password);
         
-        navigate('/login', { 
-          state: { message: t('signup.success') }
-        });
+        if (loginResult.success) {
+          navigate('/'); // Переходим сразу в чат
+        } else {
+          // Если логин не удался (маловероятно), показываем ошибку
+          setAuthError(loginResult.error);
+        }
       } catch (err) {
         if (err.response?.status === 409) {
           setAuthError(t('signup.errors.userExists'));
@@ -67,13 +76,13 @@ const SignupPage = () => {
           <Card className="shadow-sm">
             <Card.Body className="p-5">
               <h2 className="text-center mb-4">{t('signup.title')}</h2>
-              
+
               {authError && (
                 <Alert variant="danger" className="mb-3">
                   {authError}
                 </Alert>
               )}
-              
+
               <Form onSubmit={formik.handleSubmit}>
                 <Form.Group className="mb-3">
                   <Form.Label>{t('signup.username')}</Form.Label>
@@ -135,7 +144,7 @@ const SignupPage = () => {
                 >
                   {formik.isSubmitting ? t('signup.submitting') : t('signup.submit')}
                 </Button>
-                
+
                 <div className="text-center">
                   <span className="text-muted">{t('signup.haveAccount')} </span>
                   <Link to="/login">{t('signup.login')}</Link>
