@@ -31,6 +31,7 @@ const ChannelsList = () => {
           size="sm"
           onClick={handleOpenAddModal}
           title="Создать новый канал"
+          aria-label="Добавить канал"
         >
           <Plus size={16} />
         </Button>
@@ -45,6 +46,15 @@ const ChannelsList = () => {
             onClick={() => dispatch(setCurrentChannel(channel.id))}
             className="d-flex justify-content-between align-items-center"
             style={{ cursor: 'pointer' }}
+            role="button"
+            tabIndex={0}
+            aria-label={`Переключиться на канал ${channel.name}`}
+            onKeyDown={(e) => {
+              if (e.key === 'Enter' || e.key === ' ') {
+                e.preventDefault();
+                dispatch(setCurrentChannel(channel.id));
+              }
+            }}
           >
             <div className="d-flex align-items-center overflow-hidden flex-grow-1">
               <span className="text-truncate" style={{ maxWidth: '150px' }}>
@@ -54,7 +64,6 @@ const ChannelsList = () => {
                 {getMessagesCount(channel.id)}
               </Badge>
             </div>
-            {/* Оборачиваем меню в div, чтобы не нарушать структуру кнопки */}
             <div onClick={(e) => e.stopPropagation()}>
               <ChannelMenu channel={channel} />
             </div>
