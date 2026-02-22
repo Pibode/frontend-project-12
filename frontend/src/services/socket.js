@@ -7,15 +7,7 @@ class SocketService {
   }
 
   connect(token) {
-    if (this.socket?.connected) {
-      console.log("Socket already connected, reusing existing connection");
-      return this.socket;
-    }
-
-    console.log(
-      "Socket: Connecting with token:",
-      token?.substring(0, 10) + "...",
-    );
+    if (this.socket?.connected) return this.socket;
 
     // Используем текущий origin для подключения (работает и в dev, и в prod)
     this.socket = io({
@@ -27,15 +19,15 @@ class SocketService {
     });
 
     this.socket.on("connect", () => {
-      console.log("Socket: Connected successfully, socket id:", this.socket.id);
+      console.log("Socket connected", this.socket.id);
     });
 
     this.socket.on("connect_error", (error) => {
-      console.error("Socket: Connection error:", error.message);
+      console.error("Socket connection error:", error.message);
     });
 
     this.socket.on("disconnect", (reason) => {
-      console.log("Socket: Disconnected:", reason);
+      console.log("Socket disconnected:", reason);
     });
 
     // Делаем сокет доступным глобально для отладки (только в dev режиме)

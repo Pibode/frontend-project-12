@@ -8,6 +8,7 @@ import { fetchChannels, fetchMessages } from '../slices/channelsSlice';
 import useSocket from '../hooks/useSocket';
 import useChannelModals from '../hooks/useChannelModals';
 import { logError } from '../lib/rollbar';
+import { useAuth } from '../contexts/AuthContext';
 import ChannelsList from '../components/ChannelsList';
 import MessagesList from '../components/MessagesList';
 import MessageForm from '../components/MessageForm';
@@ -21,6 +22,7 @@ const ChatPage = () => {
   const { loading, error, currentChannelId, channels } = useSelector(
     (state) => state.channels
   );
+  const { user } = useAuth();
 
   useSocket();
   const { modalType } = useChannelModals();
@@ -28,23 +30,18 @@ const ChatPage = () => {
   useEffect(() => {
     const loadData = async () => {
       try {
-        console.log('ChatPage: Loading channels and messages...');
-        const channelsResult = await dispatch(fetchChannels()).unwrap();
-        console.log('ChatPage: Channels loaded successfully:', channelsResult);
-        const messagesResult = await dispatch(fetchMessages()).unwrap();
-        console.log('ChatPage: Messages loaded successfully:', messagesResult);
+        await Promise.all([
+          dispatch(fetchChannels()).unwrap(),
+          dispatch(fetchMessages()).unwrap(),
+        ]);
       } catch (err) {
-        console.error('ChatPage: Failed to load data:', err);
         logError(err, { component: 'ChatPage', action: 'loadData' });
+        console.error('Failed to load data:', err);
       }
     };
 
     loadData();
   }, [dispatch]);
-
-  useEffect(() => {
-    console.log('ChatPage: channels state updated:', channels);
-  }, [channels]);
 
   useEffect(() => {
     if (error) {

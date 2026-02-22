@@ -107,12 +107,9 @@ export const fetchChannels = createAsyncThunk(
   "channels/fetchChannels",
   async (_, { rejectWithValue }) => {
     try {
-      console.log("Fetching channels...");
       const response = await axiosInstance.get("/channels");
-      console.log("Channels response:", response.data);
       return response.data;
     } catch (error) {
-      console.error("Fetch channels error:", error);
       handleNetworkError(error);
       return rejectWithValue(error.response?.data || error.message);
     }
@@ -254,33 +251,23 @@ const channelsSlice = createSlice({
   extraReducers: (builder) => {
     builder
       .addCase(fetchChannels.pending, (state) => {
-        console.log("fetchChannels: pending");
         state.loading = true;
         state.error = null;
       })
       .addCase(fetchChannels.fulfilled, (state, action) => {
-        console.log("fetchChannels: fulfilled with", action.payload);
         state.loading = false;
         state.channels = action.payload;
         const generalChannel = action.payload.find(
           (ch) => ch.name === "general",
         );
         state.currentChannelId = generalChannel?.id || null;
-        console.log(
-          "fetchChannels: general channel:",
-          generalChannel,
-          "current id:",
-          state.currentChannelId,
-        );
       })
       .addCase(fetchChannels.rejected, (state, action) => {
-        console.log("fetchChannels: rejected with", action.payload);
         state.loading = false;
         state.error = action.payload || action.error.message;
       })
 
       .addCase(fetchMessages.fulfilled, (state, action) => {
-        console.log("fetchMessages: fulfilled with", action.payload);
         // Сообщения уже отфильтрованы в thunk
         state.messages = action.payload.map((msg) => ({
           ...msg,
@@ -288,7 +275,6 @@ const channelsSlice = createSlice({
         }));
       })
       .addCase(fetchMessages.rejected, (state, action) => {
-        console.log("fetchMessages: rejected with", action.payload);
         state.error = action.payload || action.error.message;
       })
 

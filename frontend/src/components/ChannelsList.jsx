@@ -13,13 +13,6 @@ const ChannelsList = () => {
   const currentChannelId = useSelector((state) => state.channels.currentChannelId);
   const messages = useSelector((state) => state.channels.messages) || [];
 
-  console.log('ChannelsList rendered:', {
-    channelsCount: channels.length,
-    channels: channels,
-    currentChannelId: currentChannelId,
-    isArray: Array.isArray(channels)
-  });
-
   const getMessagesCount = (channelId) => {
     return messages.filter((msg) => Number(msg.channelId) === Number(channelId)).length;
   };
@@ -30,7 +23,7 @@ const ChannelsList = () => {
   };
 
   return (
-    <div className="col-4 border-end vh-100 p-0 d-flex flex-column" style={{ minHeight: 0 }}>
+    <div className="col-4 border-end vh-100 p-0 d-flex flex-column" style={{ minHeight: 0, backgroundColor: '#fff' }} data-testid="channels-list">
       <div className="p-3 border-bottom d-flex justify-content-between align-items-center">
         <h5 className="mb-0">Каналы</h5>
         <Button
@@ -45,7 +38,7 @@ const ChannelsList = () => {
       </div>
 
       <div className="overflow-auto flex-grow-1" style={{ minHeight: 0 }}>
-        {channels.length > 0 ? (
+        {channels && Array.isArray(channels) && channels.length > 0 ? (
           channels.map((channel) => (
             <button
               type="button"
@@ -59,10 +52,12 @@ const ChannelsList = () => {
               style={{ 
                 cursor: 'pointer',
                 borderBottom: '1px solid #dee2e6',
-                transition: 'background-color 0.2s'
+                transition: 'background-color 0.2s',
+                display: 'block'
               }}
               aria-pressed={Number(currentChannelId) === Number(channel.id)}
               aria-label={channel.name}
+              data-testid={`channel-btn-${channel.name}`}
             >
               <div className="d-flex align-items-center overflow-hidden flex-grow-1">
                 <span className="text-truncate" style={{ maxWidth: '150px' }}>
