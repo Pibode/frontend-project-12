@@ -1,6 +1,6 @@
 install:
 	npm ci
-	cd frontend && npm ci
+	cd frontend && npm install --legacy-peer-deps
 
 build:
 	npm run build
