@@ -48,7 +48,7 @@ const ChannelsList = () => {
             style={{ cursor: 'pointer' }}
             role="button"
             tabIndex={0}
-            aria-label={`Переключиться на канал ${channel.name}`}
+            aria-label={channel.name}
             onKeyDown={(e) => {
               if (e.key === 'Enter' || e.key === ' ') {
                 e.preventDefault();
