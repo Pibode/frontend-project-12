@@ -6,12 +6,12 @@ import { useFormik } from 'formik';
 import * as yup from 'yup';
 import { useTranslation } from 'react-i18next';
 import axios from 'axios';
-import { useAuth } from '../contexts/AuthContext'; 
+import { useAuth } from '../contexts/AuthContext';
 
 const SignupPage = () => {
   const { t } = useTranslation();
   const navigate = useNavigate();
-  const { login } = useAuth(); 
+  const { login } = useAuth();
   const [authError, setAuthError] = useState(null);
 
   const validationSchema = yup.object({
@@ -38,7 +38,8 @@ const SignupPage = () => {
     },
     validationSchema,
     onSubmit: async (values, { setSubmitting }) => {
-      setAuthError(null);
+        setSubmitting(true)
+        setAuthError(null);
 
       try {
         // Сначала регистрируем пользователя
@@ -46,10 +47,10 @@ const SignupPage = () => {
           username: values.username,
           password: values.password,
         });
-
+        console.log("before loginning user here")
         // Затем автоматически логиним его
         const loginResult = await login(values.username, values.password);
-        
+        console.log("loginning user here")
         if (loginResult.success) {
           navigate('/'); // Переходим сразу в чат
         } else {
@@ -84,7 +85,7 @@ const SignupPage = () => {
               )}
 
               <Form onSubmit={formik.handleSubmit}>
-                <Form.Group className="mb-3">
+                <Form.Group className="mb-3" controlId="signup-username">
                   <Form.Label>{t('signup.username')}</Form.Label>
                   <Form.Control
                     type="text"
@@ -102,7 +103,7 @@ const SignupPage = () => {
                   </Form.Control.Feedback>
                 </Form.Group>
 
-                <Form.Group className="mb-3">
+                <Form.Group className="mb-3" controlId="signup-password">
                   <Form.Label>{t('signup.password')}</Form.Label>
                   <Form.Control
                     type="password"
@@ -119,7 +120,7 @@ const SignupPage = () => {
                   </Form.Control.Feedback>
                 </Form.Group>
 
-                <Form.Group className="mb-4">
+                <Form.Group className="mb-4" controlId="signup-confirmPassword">
                   <Form.Label>{t('signup.confirmPassword')}</Form.Label>
                   <Form.Control
                     type="password"

@@ -34,8 +34,8 @@ const LoginPage = () => {
       if (result.success) {
         navigate('/');
       } else {
-        setAuthError(result.error === 'Неверные имя пользователя или пароль' 
-          ? t('login.errors.invalid') 
+        setAuthError(result.error === 'Неверные имя пользователя или пароль'
+          ? t('login.errors.invalid')
           : t('login.errors.network'));
       }
 
@@ -64,7 +64,7 @@ const LoginPage = () => {
               )}
 
               <Form onSubmit={formik.handleSubmit}>
-                <Form.Group className="mb-3">
+                <Form.Group className="mb-3" controlId="login-username">
                   <Form.Label>{t('login.username')}</Form.Label>
                   <Form.Control
                     type="text"
@@ -78,7 +78,7 @@ const LoginPage = () => {
                   />
                 </Form.Group>
 
-                <Form.Group className="mb-4">
+                <Form.Group className="mb-4" controlId="login-password">
                   <Form.Label>{t('login.password')}</Form.Label>
                   <Form.Control
                     type="password"
