@@ -1,28 +1,28 @@
 // frontend/src/App.jsx
-import React from 'react'; 
-import { BrowserRouter, Routes, Route } from 'react-router-dom';
-import { Provider as RollbarProvider, ErrorBoundary } from '@rollbar/react';
-import { ToastContainer } from 'react-toastify';
-import 'react-toastify/dist/ReactToastify.css';
-import { AuthProvider } from './contexts/AuthContext';
-import ProtectedRoute from './components/ProtectedRoute';
-import Header from './components/Header';
-import ChatPage from './pages/ChatPage';
-import LoginPage from './pages/LoginPage';
-import SignupPage from './pages/SignupPage';
-import NotFoundPage from './pages/NotFoundPage';
-import rollbar, { logError } from './lib/rollbar';
-import { env } from './config';
+import React from 'react'
+import { BrowserRouter, Routes, Route } from 'react-router-dom'
+import { Provider as RollbarProvider, ErrorBoundary } from '@rollbar/react'
+import { ToastContainer } from 'react-toastify'
+import 'react-toastify/dist/ReactToastify.css'
+import { AuthProvider } from './contexts/AuthContext'
+import ProtectedRoute from './components/ProtectedRoute'
+import Header from './components/Header'
+import ChatPage from './pages/ChatPage'
+import LoginPage from './pages/LoginPage'
+import SignupPage from './pages/SignupPage'
+import NotFoundPage from './pages/NotFoundPage'
+import rollbar, { logError } from './lib/rollbar'
+import { env } from './config'
 
 // Компонент для глобальной обработки ошибок
 class GlobalErrorHandler extends React.Component {
   componentDidCatch(error, errorInfo) {
     // Логируем ошибку в Rollbar
-    logError(error, { errorInfo, component: 'GlobalErrorHandler' });
+    logError(error, { errorInfo, component: 'GlobalErrorHandler' })
   }
 
   render() {
-    return this.props.children;
+    return this.props.children
   }
 }
 
@@ -32,7 +32,7 @@ const rollbarConfig = {
   captureUncaught: true,
   captureUnhandledRejections: true,
   enabled: env.isProduction,
-};
+}
 
 function App() {
   return (
@@ -55,17 +55,17 @@ function App() {
                     </div>
                   )}
                   onError={(error, errorInfo) => {
-                    logError(error, { errorInfo, component: 'AppErrorBoundary' });
+                    logError(error, { errorInfo, component: 'AppErrorBoundary' })
                   }}
                 >
                   <Routes>
                     <Route
                       path="/"
-                      element={
+                      element={(
                         <ProtectedRoute>
                           <ChatPage />
                         </ProtectedRoute>
-                      }
+                      )}
                     />
                     <Route path="/login" element={<LoginPage />} />
                     <Route path="/signup" element={<SignupPage />} />
@@ -90,7 +90,7 @@ function App() {
         </AuthProvider>
       </BrowserRouter>
     </RollbarProvider>
-  );
+  )
 }
 
-export default App;
+export default App

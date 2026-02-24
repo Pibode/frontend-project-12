@@ -1,21 +1,21 @@
 // frontend/src/components/modals/AddChannelModal.jsx
-import { useEffect, useRef } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
-import { Modal, Button, Form } from 'react-bootstrap';
-import { useFormik } from 'formik';
-import * as yup from 'yup';
-import { useTranslation } from 'react-i18next';
-import { toast } from 'react-toastify';
-import { addChannel } from '../../slices/channelsSlice';
-import useChannelModals from '../../hooks/useChannelModals';
-import { cleanProfanity } from '../../utils/profanity';
+import { useEffect, useRef } from 'react'
+import { useDispatch, useSelector } from 'react-redux'
+import { Modal, Button, Form } from 'react-bootstrap'
+import { useFormik } from 'formik'
+import * as yup from 'yup'
+import { useTranslation } from 'react-i18next'
+import { toast } from 'react-toastify'
+import { addChannel } from '../../slices/channelsSlice'
+import useChannelModals from '../../hooks/useChannelModals'
+import { cleanProfanity } from '../../utils/profanity'
 
 const AddChannelModal = () => {
-  const { t } = useTranslation();
-  const dispatch = useDispatch();
-  const { isOpen, handleCloseModal } = useChannelModals();
-  const channels = useSelector((state) => state.channels.channels);
-  const inputRef = useRef(null);
+  const { t } = useTranslation()
+  const dispatch = useDispatch()
+  const { isOpen, handleCloseModal } = useChannelModals()
+  const channels = useSelector(state => state.channels.channels)
+  const inputRef = useRef(null)
 
   // Схема валидации: длина, уникальность, обязательность
   const validationSchema = yup.object({
@@ -25,40 +25,42 @@ const AddChannelModal = () => {
       .max(20, t('modals.errors.minMax'))
       .required(t('modals.errors.required'))
       .test('unique', t('modals.errors.unique'), (value) => {
-        return !channels.some((ch) => ch.name === value);
+        return !channels.some(ch => ch.name === value)
       }),
-  });
+  })
 
   const formik = useFormik({
     initialValues: { name: '' },
     validationSchema,
     onSubmit: async (values, { setSubmitting, resetForm }) => {
       try {
-        const safeName = cleanProfanity(values.name);
-        await dispatch(addChannel(safeName)).unwrap();
-        resetForm();
-        handleCloseModal();
-      } catch (error) {
-        console.error('Failed to add channel:', error);
-        toast.error(error.message || t('modals.errors.unique'));
-      } finally {
-        setSubmitting(false);
+        const safeName = cleanProfanity(values.name)
+        await dispatch(addChannel(safeName)).unwrap()
+        resetForm()
+        handleCloseModal()
+      }
+      catch (error) {
+        console.error('Failed to add channel:', error)
+        toast.error(error.message || t('modals.errors.unique'))
+      }
+      finally {
+        setSubmitting(false)
       }
     },
-  });
+  })
 
   useEffect(() => {
     if (isOpen && inputRef.current) {
-      setTimeout(() => inputRef.current.focus(), 100);
+      setTimeout(() => inputRef.current.focus(), 100)
     }
-  }, [isOpen]);
+  }, [isOpen])
 
   const handleKeyDown = (e) => {
     if (e.key === 'Enter' && !e.shiftKey) {
-      e.preventDefault();
-      formik.handleSubmit();
+      e.preventDefault()
+      formik.handleSubmit()
     }
-  };
+  }
 
   return (
     <Modal show={isOpen} onHide={handleCloseModal} centered>
@@ -103,7 +105,7 @@ const AddChannelModal = () => {
         </Modal.Footer>
       </Form>
     </Modal>
-  );
-};
+  )
+}
 
-export default AddChannelModal;
+export default AddChannelModal

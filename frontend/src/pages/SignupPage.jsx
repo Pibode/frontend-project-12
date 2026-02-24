@@ -1,18 +1,18 @@
 // frontend/src/pages/SignupPage.jsx
-import { useState } from 'react';
-import { useNavigate, Link } from 'react-router-dom';
-import { Form, Button, Alert, Container, Row, Col, Card } from 'react-bootstrap';
-import { useFormik } from 'formik';
-import * as yup from 'yup';
-import { useTranslation } from 'react-i18next';
-import axios from 'axios';
-import { useAuth } from '../contexts/AuthContext';
+import { useState } from 'react'
+import { useNavigate, Link } from 'react-router-dom'
+import { Form, Button, Alert, Container, Row, Col, Card } from 'react-bootstrap'
+import { useFormik } from 'formik'
+import * as yup from 'yup'
+import { useTranslation } from 'react-i18next'
+import axios from 'axios'
+import { useAuth } from '../contexts/AuthContext'
 
 const SignupPage = () => {
-  const { t } = useTranslation();
-  const navigate = useNavigate();
-  const { login } = useAuth();
-  const [authError, setAuthError] = useState(null);
+  const { t } = useTranslation()
+  const navigate = useNavigate()
+  const { login } = useAuth()
+  const [authError, setAuthError] = useState(null)
 
   const validationSchema = yup.object({
     username: yup
@@ -28,7 +28,7 @@ const SignupPage = () => {
       .string()
       .oneOf([yup.ref('password'), null], t('signup.errors.passwordsMustMatch'))
       .required(t('signup.errors.confirmRequired')),
-  });
+  })
 
   const formik = useFormik({
     initialValues: {
@@ -38,37 +38,41 @@ const SignupPage = () => {
     },
     validationSchema,
     onSubmit: async (values, { setSubmitting }) => {
-        setSubmitting(true)
-        setAuthError(null);
+      setSubmitting(true)
+      setAuthError(null)
 
       try {
         // Сначала регистрируем пользователя
         await axios.post('/api/v1/signup', {
           username: values.username,
           password: values.password,
-        });
-        console.log("before loginning user here")
+        })
+        console.log('before loginning user here')
         // Затем автоматически логиним его
-        const loginResult = await login(values.username, values.password);
-        console.log("loginning user here")
+        const loginResult = await login(values.username, values.password)
+        console.log('loginning user here')
         if (loginResult.success) {
-          navigate('/'); // Переходим сразу в чат
-        } else {
+          navigate('/') // Переходим сразу в чат
+        }
+        else {
           // Если логин не удался (маловероятно), показываем ошибку
-          setAuthError(loginResult.error);
+          setAuthError(loginResult.error)
         }
-      } catch (err) {
+      }
+      catch (err) {
         if (err.response?.status === 409) {
-          setAuthError(t('signup.errors.userExists'));
-        } else {
-          setAuthError(t('signup.errors.network'));
+          setAuthError(t('signup.errors.userExists'))
         }
-        console.error('Signup error:', err);
-      } finally {
-        setSubmitting(false);
+        else {
+          setAuthError(t('signup.errors.network'))
+        }
+        console.error('Signup error:', err)
+      }
+      finally {
+        setSubmitting(false)
       }
     },
-  });
+  })
 
   return (
     <Container fluid className="h-100">
@@ -147,7 +151,10 @@ const SignupPage = () => {
                 </Button>
 
                 <div className="text-center">
-                  <span className="text-muted">{t('signup.haveAccount')} </span>
+                  <span className="text-muted">
+                    {t('signup.haveAccount')}
+                    {' '}
+                  </span>
                   <Link to="/login">{t('signup.login')}</Link>
                 </div>
               </Form>
@@ -156,7 +163,7 @@ const SignupPage = () => {
         </Col>
       </Row>
     </Container>
-  );
-};
+  )
+}
 
-export default SignupPage;
+export default SignupPage

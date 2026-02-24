@@ -1,10 +1,10 @@
 // frontend/src/lib/i18n.js
-import i18n from 'i18next';
-import { initReactI18next } from 'react-i18next';
-import LanguageDetector from 'i18next-browser-languagedetector';
+import i18n from 'i18next'
+import { initReactI18next } from 'react-i18next'
+import LanguageDetector from 'i18next-browser-languagedetector'
 
-import ruTranslation from '../locales/ru/translation.json';
-import enTranslation from '../locales/en/translation.json';
+import ruTranslation from '../locales/ru/translation.json'
+import enTranslation from '../locales/en/translation.json'
 
 const resources = {
   ru: {
@@ -13,7 +13,7 @@ const resources = {
   en: {
     translation: enTranslation,
   },
-};
+}
 
 i18n
   .use(LanguageDetector) // Определяет язык браузера
@@ -29,6 +29,6 @@ i18n
       order: ['localStorage', 'navigator'],
       caches: ['localStorage'], // Сохраняем выбор языка
     },
-  });
+  })
 
-export default i18n;
+export default i18n

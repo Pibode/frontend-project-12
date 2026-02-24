@@ -1,24 +1,24 @@
 // frontend/src/pages/LoginPage.jsx
-import { useFormik } from 'formik';
-import { useNavigate, Link, useLocation } from 'react-router-dom';
-import { Alert, Container, Row, Col, Card, Form, Button } from 'react-bootstrap';
-import { useTranslation } from 'react-i18next';
-import { useAuth } from '../contexts/AuthContext';
-import { useState, useEffect } from 'react';
+import { useFormik } from 'formik'
+import { useNavigate, Link, useLocation } from 'react-router-dom'
+import { Alert, Container, Row, Col, Card, Form, Button } from 'react-bootstrap'
+import { useTranslation } from 'react-i18next'
+import { useAuth } from '../contexts/AuthContext'
+import { useState, useEffect } from 'react'
 
 const LoginPage = () => {
-  const { t } = useTranslation();
-  const navigate = useNavigate();
-  const location = useLocation();
-  const { login } = useAuth();
-  const [authError, setAuthError] = useState(null);
-  const [successMessage, setSuccessMessage] = useState(location.state?.message || null);
+  const { t } = useTranslation()
+  const navigate = useNavigate()
+  const location = useLocation()
+  const { login } = useAuth()
+  const [authError, setAuthError] = useState(null)
+  const [successMessage, setSuccessMessage] = useState(location.state?.message || null)
 
   useEffect(() => {
     if (location.state?.message) {
-      window.history.replaceState({}, document.title);
+      window.history.replaceState({}, document.title)
     }
-  }, [location]);
+  }, [location])
 
   const formik = useFormik({
     initialValues: {
@@ -26,22 +26,23 @@ const LoginPage = () => {
       password: '',
     },
     onSubmit: async (values, { setSubmitting }) => {
-      setAuthError(null);
-      setSuccessMessage(null);
+      setAuthError(null)
+      setSuccessMessage(null)
 
-      const result = await login(values.username, values.password);
+      const result = await login(values.username, values.password)
 
       if (result.success) {
-        navigate('/');
-      } else {
+        navigate('/')
+      }
+      else {
         setAuthError(result.error === 'Неверные имя пользователя или пароль'
           ? t('login.errors.invalid')
-          : t('login.errors.network'));
+          : t('login.errors.network'))
       }
 
-      setSubmitting(false);
+      setSubmitting(false)
     },
-  });
+  })
 
   return (
     <Container fluid className="h-100">
@@ -101,7 +102,10 @@ const LoginPage = () => {
                 </Button>
 
                 <div className="text-center">
-                  <span className="text-muted">{t('login.noAccount')} </span>
+                  <span className="text-muted">
+                    {t('login.noAccount')}
+                    {' '}
+                  </span>
                   <Link to="/signup">{t('login.signup')}</Link>
                 </div>
               </Form>
@@ -110,7 +114,7 @@ const LoginPage = () => {
         </Col>
       </Row>
     </Container>
-  );
-};
+  )
+}
 
-export default LoginPage;
+export default LoginPage

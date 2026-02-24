@@ -1,19 +1,20 @@
 // frontend/src/services/profanity.js
-import leoProfanity from "leo-profanity";
+import leoProfanity from 'leo-profanity'
 
 // Создаем единственный экземпляр фильтра (синглтон)
-const profanityFilter = leoProfanity;
+const profanityFilter = leoProfanity
 
-profanityFilter.add(["boobs"]);
+profanityFilter.add(['boobs'])
 
 // Загружаем русский словарь. fallback на английский, если русского нет.
 try {
-  profanityFilter.loadDictionary("ru");
-  console.log("Profanity filter: Russian dictionary loaded.");
-} catch (error) {
+  profanityFilter.loadDictionary('ru')
+  console.log('Profanity filter: Russian dictionary loaded.')
+}
+catch (error) {
   console.warn(
-    "Profanity filter: Russian dictionary not found, using default.",
-  );
+    'Profanity filter: Russian dictionary not found, using default.',
+  )
   // Если русского словаря нет, библиотека использует английский по умолчанию.
 }
 
@@ -26,9 +27,9 @@ try {
  * @returns {boolean} - true, если есть нецензурные слова.
  */
 export const containsProfanity = (text) => {
-  if (!text || typeof text !== "string") return false;
-  return profanityFilter.check(text);
-};
+  if (!text || typeof text !== 'string') return false
+  return profanityFilter.check(text)
+}
 
 /**
  * Очищает текст от нецензурных слов, полностью заменяя каждое слово на ***
@@ -36,24 +37,24 @@ export const containsProfanity = (text) => {
  * @returns {string} - Очищенный текст.
  */
 export const cleanProfanity = (text) => {
-  if (!text || typeof text !== "string") return text;
+  if (!text || typeof text !== 'string') return text
 
   // Разбиваем текст на слова
-  const words = text.split(" ");
+  const words = text.split(' ')
 
   // Обрабатываем каждое слово
   const cleanedWords = words.map((word) => {
     // Проверяем, содержит ли слово нецензурную лексику
     if (profanityFilter.check(word)) {
       // Полностью заменяем слово на ***
-      return "***";
+      return '***'
     }
-    return word;
-  });
+    return word
+  })
 
   // Собираем обратно в строку
-  return cleanedWords.join(" ");
-};
+  return cleanedWords.join(' ')
+}
 
 /**
  * Валидирует текст на наличие нецензурных слов.
@@ -61,14 +62,14 @@ export const cleanProfanity = (text) => {
  * @param {string} fieldName - Название поля для сообщения об ошибке.
  * @returns {Object} - { isValid: boolean, errorMessage: string | null }
  */
-export const validateProfanity = (text, fieldName = "Текст") => {
+export const validateProfanity = (text, fieldName = 'Текст') => {
   if (containsProfanity(text)) {
     return {
       isValid: false,
       errorMessage: `${fieldName} содержит недопустимые слова.`,
-    };
+    }
   }
-  return { isValid: true, errorMessage: null };
-};
+  return { isValid: true, errorMessage: null }
+}
 
-export default profanityFilter;
+export default profanityFilter

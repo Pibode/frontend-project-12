@@ -1,29 +1,29 @@
 // frontend/src/components/ChannelMenu.jsx
-import { Dropdown } from 'react-bootstrap';
-import { ThreeDotsVertical } from 'react-bootstrap-icons';
-import { useTranslation } from 'react-i18next';
-import useChannelModals from '../hooks/useChannelModals';
+import { Dropdown } from 'react-bootstrap'
+import { ThreeDotsVertical } from 'react-bootstrap-icons'
+import { useTranslation } from 'react-i18next'
+import useChannelModals from '../hooks/useChannelModals'
 
 const ChannelMenu = ({ channel }) => {
-  const { t } = useTranslation();
-  const { handleOpenRenameModal, handleOpenRemoveModal } = useChannelModals();
+  const { t } = useTranslation()
+  const { handleOpenRenameModal, handleOpenRemoveModal } = useChannelModals()
 
   if (channel.name === 'general' || !channel.removable) {
-    return null;
+    return null
   }
 
   const handleRename = (e) => {
-    e.stopPropagation();
-    handleOpenRenameModal(channel.id);
-  };
+    e.stopPropagation()
+    handleOpenRenameModal(channel.id)
+  }
 
   const handleRemove = (e) => {
-    e.stopPropagation();
-    handleOpenRemoveModal(channel.id);
-  };
+    e.stopPropagation()
+    handleOpenRemoveModal(channel.id)
+  }
 
   return (
-    <Dropdown onClick={(e) => e.stopPropagation()}>
+    <Dropdown onClick={e => e.stopPropagation()}>
       <Dropdown.Toggle
         as="button"
         type="button"
@@ -33,7 +33,7 @@ const ChannelMenu = ({ channel }) => {
       >
         <ThreeDotsVertical size={16} />
         <span className="visually-hidden">
-          {'Управление каналом'}
+          Управление каналом
         </span>
       </Dropdown.Toggle>
 
@@ -46,7 +46,7 @@ const ChannelMenu = ({ channel }) => {
         </Dropdown.Item>
       </Dropdown.Menu>
     </Dropdown>
-  );
-};
+  )
+}
 
-export default ChannelMenu;
+export default ChannelMenu
