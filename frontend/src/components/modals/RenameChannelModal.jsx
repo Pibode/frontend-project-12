@@ -77,28 +77,29 @@ const RenameChannelModal = () => {
 
       <Form onSubmit={formik.handleSubmit}>
         <Modal.Body>
-          <Form.Group>
-            <Form.Label>{t('modals.rename.label')}</Form.Label>
-            <Form.Control
-              ref={inputRef}
-              type="text"
-              name="name"
-              value={formik.values.name}
-              onChange={formik.handleChange}
-              onBlur={formik.handleBlur}
-              onKeyDown={handleKeyDown}
-              isInvalid={formik.touched.name && formik.errors.name}
-              disabled={formik.isSubmitting}
-              autoComplete="off"
-            />
-            <Form.Control.Feedback type="invalid">
-              {formik.errors.name}
-            </Form.Control.Feedback>
-          </Form.Group>
+            <Form.Group controlId="modal-rename-label">
+                <Form.Label>{t('modals.rename.label')}</Form.Label>
+                <Form.Control
+                    ref={inputRef}
+                    type="text"
+                    name="name"
+                    value={formik.values.name}
+                    onChange={formik.handleChange}
+                    onBlur={formik.handleBlur}
+                    onKeyDown={handleKeyDown}
+                    isInvalid={formik.touched.name && formik.errors.name}
+                    disabled={formik.isSubmitting}
+                    autoComplete="off"
+                />
+                <label className="visually-hidden" htmlFor="name">Имя канала</label>
+                <Form.Control.Feedback type="invalid">
+                    {formik.errors.name}
+                </Form.Control.Feedback>
+            </Form.Group>
         </Modal.Body>
 
-        <Modal.Footer>
-          <Button variant="secondary" onClick={handleCloseModal}>
+          <Modal.Footer>
+              <Button variant="secondary" onClick={handleCloseModal}>
             {t('modals.rename.cancel')}
           </Button>
           <Button

@@ -25,13 +25,16 @@ const ChannelMenu = ({ channel }) => {
   return (
     <Dropdown onClick={(e) => e.stopPropagation()}>
       <Dropdown.Toggle
-        as="span"
+        as="button"
+        type="button"
         variant="link"
         className="text-muted p-0 border-0"
         style={{ textDecoration: 'none', cursor: 'pointer' }}
-        aria-label={t('modals.management') || 'Управление каналом'}
       >
         <ThreeDotsVertical size={16} />
+        <span className="visually-hidden">
+          {'Управление каналом'}
+        </span>
       </Dropdown.Toggle>
 
       <Dropdown.Menu>
