@@ -105,11 +105,6 @@ const LoginPage = () => {
                   <Link to="/signup">{t('login.signup')}</Link>
                 </div>
               </Form>
-
-              <div className="mt-3 text-muted small text-center">
-                <p className="mb-1">{t('login.testCredentials')}</p>
-                <p className="mb-0">{t('login.username')}: admin, {t('login.password')}: admin</p>
-              </div>
             </Card.Body>
           </Card>
         </Col>
