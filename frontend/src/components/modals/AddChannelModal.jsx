@@ -8,7 +8,7 @@ import { useTranslation } from 'react-i18next';
 import { toast } from 'react-toastify';
 import { addChannel } from '../../slices/channelsSlice';
 import useChannelModals from '../../hooks/useChannelModals';
-import { containsProfanity } from '../../utils/profanity';
+import { cleanProfanity } from '../../utils/profanity';
 
 const AddChannelModal = () => {
   const { t } = useTranslation();
@@ -17,7 +17,7 @@ const AddChannelModal = () => {
   const channels = useSelector((state) => state.channels.channels);
   const inputRef = useRef(null);
 
-  // Схема валидации с проверкой на нецензурные слова
+  // Схема валидации: длина, уникальность, обязательность
   const validationSchema = yup.object({
     name: yup
       .string()
@@ -26,9 +26,6 @@ const AddChannelModal = () => {
       .required(t('modals.errors.required'))
       .test('unique', t('modals.errors.unique'), (value) => {
         return !channels.some((ch) => ch.name === value);
-      })
-      .test('profanity', t('modals.errors.profanity'), (value) => {
-        return !containsProfanity(value);
       }),
   });
 
@@ -37,7 +34,8 @@ const AddChannelModal = () => {
     validationSchema,
     onSubmit: async (values, { setSubmitting, resetForm }) => {
       try {
-        await dispatch(addChannel(values.name)).unwrap();
+        const safeName = cleanProfanity(values.name);
+        await dispatch(addChannel(safeName)).unwrap();
         resetForm();
         handleCloseModal();
       } catch (error) {

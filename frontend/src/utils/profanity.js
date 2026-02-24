@@ -8,7 +8,7 @@ const profanityFilter = leoProfanity;
 profanityFilter.loadDictionary("ru");
 
 // При необходимости можно добавить дополнительные слова
-// profanityFilter.add(['слово1', 'слово2']);
+profanityFilter.add(["boobs"]);
 
 // Добавляем слова в белый список, если нужно исключить какие-то слова
 // profanityFilter.addWhitelist(['хорошее', 'слово']);

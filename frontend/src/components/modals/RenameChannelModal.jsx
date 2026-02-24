@@ -8,7 +8,7 @@ import { useTranslation } from 'react-i18next';
 import { toast } from 'react-toastify';
 import { renameChannel } from '../../slices/channelsSlice';
 import useChannelModals from '../../hooks/useChannelModals';
-import { containsProfanity } from '../../utils/profanity';
+import { cleanProfanity } from '../../utils/profanity';
 
 const RenameChannelModal = () => {
   const { t } = useTranslation();
@@ -30,9 +30,6 @@ const RenameChannelModal = () => {
         return !channels.some(
           (ch) => ch.name === value && ch.id !== channelId
         );
-      })
-      .test('profanity', t('modals.errors.profanity'), (value) => {
-        return !containsProfanity(value);
       }),
   });
 
@@ -42,7 +39,8 @@ const RenameChannelModal = () => {
     enableReinitialize: true,
     onSubmit: async (values, { setSubmitting }) => {
       try {
-        await dispatch(renameChannel({ id: channelId, name: values.name })).unwrap();
+         const safeName = cleanProfanity(values.name);
+         await dispatch(renameChannel({ id: channelId, name: safeName })).unwrap();
         handleCloseModal();
       } catch (error) {
         console.error('Failed to rename channel:', error);

@@ -4,6 +4,8 @@ import leoProfanity from "leo-profanity";
 // Создаем единственный экземпляр фильтра (синглтон)
 const profanityFilter = leoProfanity;
 
+profanityFilter.add(["boobs"]);
+
 // Загружаем русский словарь. fallback на английский, если русского нет.
 try {
   profanityFilter.loadDictionary("ru");
