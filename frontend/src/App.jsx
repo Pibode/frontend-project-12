@@ -44,7 +44,7 @@ function App() {
               <Header />
               <div className="flex-grow-1 overflow-hidden">
                 <ErrorBoundary
-                  fallback={({ error, errorInfo }) => (
+                  fallback={() => (
                     <div className="container mt-5">
                       <div className="alert alert-danger">
                         <h4 className="alert-heading">Что-то пошло не так</h4>

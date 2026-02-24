@@ -1,6 +1,4 @@
-// frontend/src/lib/rollbar.js
 import Rollbar from 'rollbar'
-import { env } from '../config'
 
 // Конфигурация Rollbar
 const rollbarConfig = {

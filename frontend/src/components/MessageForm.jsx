@@ -6,7 +6,7 @@ import { useTranslation } from 'react-i18next'
 import { toast } from 'react-toastify'
 import { addMessage } from '../slices/channelsSlice'
 import { useAuth } from '../contexts/AuthContext'
-import { containsProfanity, cleanProfanity } from '../utils/profanity'
+import { cleanProfanity } from '../utils/profanity'
 import axios from 'axios'
 
 const MessageForm = () => {

@@ -8,7 +8,6 @@ import { fetchChannels, fetchMessages } from '../slices/channelsSlice'
 import useSocket from '../hooks/useSocket'
 import useChannelModals from '../hooks/useChannelModals'
 import { logError } from '../lib/rollbar'
-import { useAuth } from '../contexts/AuthContext'
 import ChannelsList from '../components/ChannelsList'
 import MessagesList from '../components/MessagesList'
 import MessageForm from '../components/MessageForm'
@@ -22,7 +21,6 @@ const ChatPage = () => {
   const { loading, error, currentChannelId, channels } = useSelector(
     state => state.channels,
   )
-  const { user } = useAuth()
 
   useSocket()
   const { modalType } = useChannelModals()

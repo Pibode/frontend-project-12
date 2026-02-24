@@ -14,6 +14,7 @@ try {
 catch (error) {
   console.warn(
     'Profanity filter: Russian dictionary not found, using default.',
+    error,
   )
   // Если русского словаря нет, библиотека использует английский по умолчанию.
 }

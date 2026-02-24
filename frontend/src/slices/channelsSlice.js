@@ -37,11 +37,6 @@ const handleNetworkError = (error) => {
   }
 }
 
-// Функция для получения текущего пользователя
-const getCurrentUsername = () => {
-  return localStorage.getItem('username')
-}
-
 // Функция для фильтрации сообщения
 const filterMessage = (message) => {
   if (!message) return message
@@ -178,9 +173,6 @@ const channelsSlice = createSlice({
       if (!exists) {
         state.channels.push(channel)
 
-        // Проверяем, не является ли это нашим собственным действием
-        const currentUser = getCurrentUsername()
-
         setTimeout(() => {
           if (!document.querySelector('.Toastify__toast--success')) {
             toast.info(i18n.t('toasts.channel.created'))
@@ -308,7 +300,7 @@ const channelsSlice = createSlice({
       .addCase(renameChannel.pending, (state) => {
         state.error = null
       })
-      .addCase(renameChannel.fulfilled, (state, action) => {
+      .addCase(renameChannel.fulfilled, (state) => {
         state.modals.isOpen = false
 
         toast.success(i18n.t('toasts.channel.renamed'))
@@ -320,7 +312,7 @@ const channelsSlice = createSlice({
       .addCase(removeChannel.pending, (state) => {
         state.error = null
       })
-      .addCase(removeChannel.fulfilled, (state, action) => {
+      .addCase(removeChannel.fulfilled, (state) => {
         state.modals.isOpen = false
 
         toast.success(i18n.t('toasts.channel.removed'))

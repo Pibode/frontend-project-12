@@ -1,4 +1,3 @@
-// frontend/src/services/socket.js
 import { io } from 'socket.io-client'
 
 class SocketService {
@@ -29,12 +28,6 @@ class SocketService {
     this.socket.on('disconnect', (reason) => {
       console.log('Socket disconnected:', reason)
     })
-
-    // Делаем сокет доступным глобально для отладки (только в dev режиме)
-    if (process.env.NODE_ENV === 'development') {
-      window.socketService = this
-      window.socket = this.socket
-    }
 
     return this.socket
   }

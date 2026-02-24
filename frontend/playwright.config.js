@@ -13,14 +13,6 @@ export default defineConfig({
     viewport: { width: 1366, height: 768 },
   },
 
-  webServer: {
-    command: 'cd frontend && npm run dev -- --host 0.0.0.0',
-    url: 'http://localhost:5001',
-    reuseExistingServer: !process.env.CI, // локально можно и не перезапускать, если dev server есть
-
-    timeout: 60_000, // подстраховаемся, если Vite с запозданием отвечает
-  },
-
   // time outs
   timeout: 30_000,
 
