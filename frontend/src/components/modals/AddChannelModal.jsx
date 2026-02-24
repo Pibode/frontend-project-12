@@ -70,7 +70,7 @@ const AddChannelModal = () => {
 
       <Form onSubmit={formik.handleSubmit}>
         <Modal.Body>
-          <Form.Group>
+          <Form.Group controlId="modal-add-label">
             <Form.Label>{t('modals.add.label')}</Form.Label>
             <Form.Control
               ref={inputRef}

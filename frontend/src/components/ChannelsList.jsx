@@ -26,18 +26,19 @@ const ChannelsList = () => {
     <div className="col-4 border-end vh-100 p-0 d-flex flex-column" style={{ minHeight: 0, backgroundColor: '#fff' }} data-testid="channels-list">
       <div className="p-3 border-bottom d-flex justify-content-between align-items-center">
         <h5 className="mb-0">Каналы</h5>
-        <Button
-          variant="outline-primary"
-          size="sm"
-          onClick={handleOpenAddModal}
-          title="Создать новый канал"
-          aria-label="Добавить канал"
-        >
-          <Plus size={16} />
-        </Button>
+          <Button
+              variant="outline-primary"
+              size="sm"
+              onClick={handleOpenAddModal}
+              title="Создать новый канал"
+              aria-label="Добавить канал"
+          >
+              <Plus size={16}/>
+              <span className="visually-hidden">+</span>
+          </Button>
       </div>
 
-      <div className="overflow-auto flex-grow-1" style={{ minHeight: 0 }}>
+        <div className="overflow-auto flex-grow-1" style={{ minHeight: 0 }}>
         {channels && Array.isArray(channels) && channels.length > 0 ? (
           channels.map((channel) => (
             <button
@@ -49,7 +50,7 @@ const ChannelsList = () => {
                   ? 'bg-light text-primary'
                   : 'bg-white text-dark'
               }`}
-              style={{ 
+              style={{
                 cursor: 'pointer',
                 borderBottom: '1px solid #dee2e6',
                 transition: 'background-color 0.2s',
