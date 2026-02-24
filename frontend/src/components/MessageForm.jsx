@@ -45,10 +45,10 @@ const MessageForm = () => {
     // Очищаем текст от нецензурных слов
     const rawText = text.trim();
     const cleanText = cleanProfanity(rawText);
-    
+
     // Проверяем, были ли замены
     const wasProfane = rawText !== cleanText;
-    
+
     setText('');
     setSending(true);
 
@@ -67,7 +67,7 @@ const MessageForm = () => {
       );
 
       dispatch(addMessage(response.data));
-      
+
       // Если были замены, показываем уведомление
       if (wasProfane) {
         toast.info(t('chat.profanityFiltered'), {
@@ -110,7 +110,7 @@ const MessageForm = () => {
             value={text}
             onChange={(e) => setText(e.target.value)}
             disabled={sending || !currentChannelId || !isOnline}
-            aria-label="Сообщение"
+            aria-label="Новое сообщение"
           />
           <Button
             type="submit"
