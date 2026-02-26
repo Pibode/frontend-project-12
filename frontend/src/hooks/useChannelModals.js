@@ -1,27 +1,27 @@
 // frontend/src/hooks/useChannelModals.js
-import { useCallback } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
-import { openModal, closeModal } from '../slices/channelsSlice';
+import { useCallback } from 'react'
+import { useDispatch, useSelector } from 'react-redux'
+import { openModal, closeModal } from '../store/channelsSlice'
 
 const useChannelModals = () => {
-  const dispatch = useDispatch();
-  const { modals } = useSelector((state) => state.channels);
+  const dispatch = useDispatch()
+  const { modals } = useSelector(state => state.channels)
 
   const handleOpenAddModal = useCallback(() => {
-    dispatch(openModal({ type: 'adding' }));
-  }, [dispatch]);
+    dispatch(openModal({ type: 'adding' }))
+  }, [dispatch])
 
   const handleOpenRenameModal = useCallback((channelId) => {
-    dispatch(openModal({ type: 'renaming', channelId }));
-  }, [dispatch]);
+    dispatch(openModal({ type: 'renaming', channelId }))
+  }, [dispatch])
 
   const handleOpenRemoveModal = useCallback((channelId) => {
-    dispatch(openModal({ type: 'removing', channelId }));
-  }, [dispatch]);
+    dispatch(openModal({ type: 'removing', channelId }))
+  }, [dispatch])
 
   const handleCloseModal = useCallback(() => {
-    dispatch(closeModal());
-  }, [dispatch]);
+    dispatch(closeModal())
+  }, [dispatch])
 
   return {
     isOpen: modals.isOpen,
@@ -31,7 +31,7 @@ const useChannelModals = () => {
     handleOpenRenameModal,
     handleOpenRemoveModal,
     handleCloseModal,
-  };
-};
+  }
+}
 
-export default useChannelModals;
+export default useChannelModals

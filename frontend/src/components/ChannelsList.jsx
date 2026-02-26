@@ -1,26 +1,26 @@
 // frontend/src/components/ChannelsList.jsx
-import { useDispatch, useSelector } from 'react-redux';
-import { Button, Badge } from 'react-bootstrap';
-import { Plus } from 'react-bootstrap-icons';
-import { setCurrentChannel } from '../slices/channelsSlice';
-import ChannelMenu from './ChannelMenu';
-import useChannelModals from '../hooks/useChannelModals';
+import { useDispatch, useSelector } from 'react-redux'
+import { Button, Badge } from 'react-bootstrap'
+import { Plus } from 'react-bootstrap-icons'
+import { setCurrentChannel } from '../store/channelsSlice'
+import ChannelMenu from './ChannelMenu'
+import useChannelModals from '../hooks/useChannelModals'
 
 const ChannelsList = () => {
-  const dispatch = useDispatch();
-  const { handleOpenAddModal } = useChannelModals();
-  const channels = useSelector((state) => state.channels.channels) || [];
-  const currentChannelId = useSelector((state) => state.channels.currentChannelId);
-  const messages = useSelector((state) => state.channels.messages) || [];
+  const dispatch = useDispatch()
+  const { handleOpenAddModal } = useChannelModals()
+  const channels = useSelector(state => state.channels.channels) || []
+  const currentChannelId = useSelector(state => state.channels.currentChannelId)
+  const messages = useSelector(state => state.channels.messages) || []
 
   const getMessagesCount = (channelId) => {
-    return messages.filter((msg) => Number(msg.channelId) === Number(channelId)).length;
-  };
+    return messages.filter(msg => Number(msg.channelId) === Number(channelId)).length
+  }
 
   const truncateName = (name, maxLength = 20) => {
-    if (name.length <= maxLength) return name;
-    return `${name.slice(0, maxLength)}...`;
-  };
+    if (name.length <= maxLength) return name
+    return `${name.slice(0, maxLength)}...`
+  }
 
   return (
     <div className="col-4 border-end vh-100 p-0 d-flex flex-column" style={{ minHeight: 0, backgroundColor: '#fff' }} data-testid="channels-list">
@@ -34,52 +34,57 @@ const ChannelsList = () => {
           aria-label="Добавить канал"
         >
           <Plus size={16} />
+          <span className="visually-hidden">+</span>
         </Button>
       </div>
 
       <div className="overflow-auto flex-grow-1" style={{ minHeight: 0 }}>
-        {channels && Array.isArray(channels) && channels.length > 0 ? (
-          channels.map((channel) => (
-            <button
-              type="button"
-              key={channel.id}
-              onClick={() => dispatch(setCurrentChannel(channel.id))}
-              className={`w-100 d-flex justify-content-between align-items-center p-3 border-0 text-start ${
-                Number(currentChannelId) === Number(channel.id)
-                  ? 'bg-light text-primary'
-                  : 'bg-white text-dark'
-              }`}
-              style={{ 
-                cursor: 'pointer',
-                borderBottom: '1px solid #dee2e6',
-                transition: 'background-color 0.2s',
-                display: 'block'
-              }}
-              aria-pressed={Number(currentChannelId) === Number(channel.id)}
-              aria-label={channel.name}
-              data-testid={`channel-btn-${channel.name}`}
-            >
-              <div className="d-flex align-items-center overflow-hidden flex-grow-1">
-                <span className="text-truncate" style={{ maxWidth: '150px' }}>
-                  # {truncateName(channel.name)}
-                </span>
-                <Badge bg="secondary" pill className="ms-2">
-                  {getMessagesCount(channel.id)}
-                </Badge>
+        {channels && Array.isArray(channels) && channels.length > 0
+          ? (
+              channels.map(channel => (
+                <button
+                  type="button"
+                  key={channel.id}
+                  onClick={() => dispatch(setCurrentChannel(channel.id))}
+                  className={`w-100 d-flex justify-content-between align-items-center p-3 border-0 text-start ${
+                    Number(currentChannelId) === Number(channel.id)
+                      ? 'bg-light text-primary'
+                      : 'bg-white text-dark'
+                  }`}
+                  style={{
+                    cursor: 'pointer',
+                    borderBottom: '1px solid #dee2e6',
+                    transition: 'background-color 0.2s',
+                    display: 'block',
+                  }}
+                  aria-pressed={Number(currentChannelId) === Number(channel.id)}
+                  aria-label={channel.name}
+                  data-testid={`channel-btn-${channel.name}`}
+                >
+                  <div className="d-flex align-items-center overflow-hidden flex-grow-1">
+                    <span className="text-truncate" style={{ maxWidth: '150px' }}>
+                      #
+                      {' '}
+                      {truncateName(channel.name)}
+                    </span>
+                    <Badge bg="secondary" pill className="ms-2">
+                      {getMessagesCount(channel.id)}
+                    </Badge>
+                  </div>
+                  <div onClick={e => e.stopPropagation()}>
+                    <ChannelMenu channel={channel} />
+                  </div>
+                </button>
+              ))
+            )
+          : (
+              <div className="p-3 text-muted text-center">
+                Каналы загружаются...
               </div>
-              <div onClick={(e) => e.stopPropagation()}>
-                <ChannelMenu channel={channel} />
-              </div>
-            </button>
-          ))
-        ) : (
-          <div className="p-3 text-muted text-center">
-            Каналы загружаются...
-          </div>
-        )}
+            )}
       </div>
     </div>
-  );
-};
+  )
+}
 
-export default ChannelsList;
+export default ChannelsList

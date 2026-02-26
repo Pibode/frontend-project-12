@@ -1,34 +1,52 @@
 // frontend/src/pages/SignupPage.jsx
-import { useState } from 'react';
-import { useNavigate, Link } from 'react-router-dom';
-import { Form, Button, Alert, Container, Row, Col, Card } from 'react-bootstrap';
-import { useFormik } from 'formik';
-import * as yup from 'yup';
-import { useTranslation } from 'react-i18next';
-import axios from 'axios';
-import { useAuth } from '../contexts/AuthContext'; 
+import { useState } from 'react'
+import { useNavigate, Link } from 'react-router-dom'
+import { Form, Button, Alert, Container, Row, Col, Card } from 'react-bootstrap'
+import { useFormik } from 'formik'
+import { useTranslation } from 'react-i18next'
+import axios from 'axios'
+import { useAuth } from '../contexts/AuthContext'
+import getSignupValidationSchema from '../validation/signupValidation'
 
 const SignupPage = () => {
-  const { t } = useTranslation();
-  const navigate = useNavigate();
-  const { login } = useAuth(); 
-  const [authError, setAuthError] = useState(null);
+  const { t } = useTranslation()
+  const navigate = useNavigate()
+  const { login } = useAuth()
+  const [authError, setAuthError] = useState(null)
 
-  const validationSchema = yup.object({
-    username: yup
-      .string()
-      .min(3, t('signup.errors.usernameMinMax'))
-      .max(20, t('signup.errors.usernameMinMax'))
-      .required(t('signup.errors.usernameRequired')),
-    password: yup
-      .string()
-      .min(6, t('signup.errors.passwordMin'))
-      .required(t('signup.errors.passwordRequired')),
-    confirmPassword: yup
-      .string()
-      .oneOf([yup.ref('password'), null], t('signup.errors.passwordsMustMatch'))
-      .required(t('signup.errors.confirmRequired')),
-  });
+  const validationSchema = getSignupValidationSchema(t)
+
+  const handleSubmit = async (values, { setSubmitting }) => {
+    setSubmitting(true)
+    setAuthError(null)
+
+    try {
+      await axios.post('/api/v1/signup', {
+        username: values.username,
+        password: values.password,
+      })
+
+      const loginResult = await login(values.username, values.password)
+      if (loginResult.success) {
+        navigate('/')
+      }
+      else {
+        setAuthError(loginResult.error)
+      }
+    }
+    catch (err) {
+      if (err.response?.status === 409) {
+        setAuthError(t('signup.errors.userExists'))
+      }
+      else {
+        setAuthError(t('signup.errors.network'))
+      }
+      console.error('Signup error:', err)
+    }
+    finally {
+      setSubmitting(false)
+    }
+  }
 
   const formik = useFormik({
     initialValues: {
@@ -37,37 +55,10 @@ const SignupPage = () => {
       confirmPassword: '',
     },
     validationSchema,
-    onSubmit: async (values, { setSubmitting }) => {
-      setAuthError(null);
-
-      try {
-        // Сначала регистрируем пользователя
-        await axios.post('/api/v1/signup', {
-          username: values.username,
-          password: values.password,
-        });
-
-        // Затем автоматически логиним его
-        const loginResult = await login(values.username, values.password);
-        
-        if (loginResult.success) {
-          navigate('/'); // Переходим сразу в чат
-        } else {
-          // Если логин не удался (маловероятно), показываем ошибку
-          setAuthError(loginResult.error);
-        }
-      } catch (err) {
-        if (err.response?.status === 409) {
-          setAuthError(t('signup.errors.userExists'));
-        } else {
-          setAuthError(t('signup.errors.network'));
-        }
-        console.error('Signup error:', err);
-      } finally {
-        setSubmitting(false);
-      }
-    },
-  });
+    validateOnChange: false,
+    validateOnBlur: false,
+    onSubmit: handleSubmit,
+  })
 
   return (
     <Container fluid className="h-100">
@@ -84,7 +75,7 @@ const SignupPage = () => {
               )}
 
               <Form onSubmit={formik.handleSubmit}>
-                <Form.Group className="mb-3">
+                <Form.Group className="mb-3" controlId="signup-username">
                   <Form.Label>{t('signup.username')}</Form.Label>
                   <Form.Control
                     type="text"
@@ -102,7 +93,7 @@ const SignupPage = () => {
                   </Form.Control.Feedback>
                 </Form.Group>
 
-                <Form.Group className="mb-3">
+                <Form.Group className="mb-3" controlId="signup-password">
                   <Form.Label>{t('signup.password')}</Form.Label>
                   <Form.Control
                     type="password"
@@ -119,7 +110,7 @@ const SignupPage = () => {
                   </Form.Control.Feedback>
                 </Form.Group>
 
-                <Form.Group className="mb-4">
+                <Form.Group className="mb-4" controlId="signup-confirmPassword">
                   <Form.Label>{t('signup.confirmPassword')}</Form.Label>
                   <Form.Control
                     type="password"
@@ -146,7 +137,10 @@ const SignupPage = () => {
                 </Button>
 
                 <div className="text-center">
-                  <span className="text-muted">{t('signup.haveAccount')} </span>
+                  <span className="text-muted">
+                    {t('signup.haveAccount')}
+                    {' '}
+                  </span>
                   <Link to="/login">{t('signup.login')}</Link>
                 </div>
               </Form>
@@ -155,7 +149,7 @@ const SignupPage = () => {
         </Col>
       </Row>
     </Container>
-  );
-};
+  )
+}
 
-export default SignupPage;
+export default SignupPage

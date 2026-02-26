@@ -1,47 +1,56 @@
 // frontend/src/pages/LoginPage.jsx
-import { useFormik } from 'formik';
-import { useNavigate, Link, useLocation } from 'react-router-dom';
-import { Alert, Container, Row, Col, Card, Form, Button } from 'react-bootstrap';
-import { useTranslation } from 'react-i18next';
-import { useAuth } from '../contexts/AuthContext';
-import { useState, useEffect } from 'react';
+import { useFormik } from 'formik'
+import { useNavigate, Link, useLocation } from 'react-router-dom'
+import { Alert, Container, Row, Col, Card, Form, Button } from 'react-bootstrap'
+import { useTranslation } from 'react-i18next'
+import { useAuth } from '../contexts/AuthContext'
+import { useState, useEffect } from 'react'
+import getLoginValidationSchema from '../validation/loginValidation'
 
 const LoginPage = () => {
-  const { t } = useTranslation();
-  const navigate = useNavigate();
-  const location = useLocation();
-  const { login } = useAuth();
-  const [authError, setAuthError] = useState(null);
-  const [successMessage, setSuccessMessage] = useState(location.state?.message || null);
+  const { t } = useTranslation()
+  const navigate = useNavigate()
+  const location = useLocation()
+  const { login } = useAuth()
+  const [authError, setAuthError] = useState(null)
+  const [successMessage, setSuccessMessage] = useState(location.state?.message || null)
 
   useEffect(() => {
     if (location.state?.message) {
-      window.history.replaceState({}, document.title);
+      window.history.replaceState({}, document.title)
     }
-  }, [location]);
+  }, [location])
+
+  const validationSchema = getLoginValidationSchema(t)
+
+  const handleSubmit = async (values, { setSubmitting }) => {
+    setAuthError(null)
+    setSuccessMessage(null)
+
+    const result = await login(values.username, values.password)
+
+    if (result.success) {
+      navigate('/')
+    }
+    else {
+      setAuthError(result.error === 'Неверные имя пользователя или пароль'
+        ? t('login.errors.invalid')
+        : t('login.errors.network'))
+    }
+
+    setSubmitting(false)
+  }
 
   const formik = useFormik({
     initialValues: {
       username: '',
       password: '',
     },
-    onSubmit: async (values, { setSubmitting }) => {
-      setAuthError(null);
-      setSuccessMessage(null);
-
-      const result = await login(values.username, values.password);
-
-      if (result.success) {
-        navigate('/');
-      } else {
-        setAuthError(result.error === 'Неверные имя пользователя или пароль' 
-          ? t('login.errors.invalid') 
-          : t('login.errors.network'));
-      }
-
-      setSubmitting(false);
-    },
-  });
+    validationSchema,
+    validateOnChange: false,
+    validateOnBlur: false,
+    onSubmit: handleSubmit,
+  })
 
   return (
     <Container fluid className="h-100">
@@ -64,7 +73,7 @@ const LoginPage = () => {
               )}
 
               <Form onSubmit={formik.handleSubmit}>
-                <Form.Group className="mb-3">
+                <Form.Group className="mb-3" controlId="login-username">
                   <Form.Label>{t('login.username')}</Form.Label>
                   <Form.Control
                     type="text"
@@ -72,13 +81,17 @@ const LoginPage = () => {
                     value={formik.values.username}
                     onChange={formik.handleChange}
                     onBlur={formik.handleBlur}
+                    isInvalid={formik.touched.username && formik.errors.username}
                     disabled={formik.isSubmitting}
                     placeholder={t('login.username')}
                     autoFocus
                   />
+                  <Form.Control.Feedback type="invalid">
+                    {formik.errors.username}
+                  </Form.Control.Feedback>
                 </Form.Group>
 
-                <Form.Group className="mb-4">
+                <Form.Group className="mb-4" controlId="login-password">
                   <Form.Label>{t('login.password')}</Form.Label>
                   <Form.Control
                     type="password"
@@ -86,36 +99,38 @@ const LoginPage = () => {
                     value={formik.values.password}
                     onChange={formik.handleChange}
                     onBlur={formik.handleBlur}
+                    isInvalid={formik.touched.password && formik.errors.password}
                     disabled={formik.isSubmitting}
                     placeholder={t('login.password')}
                   />
+                  <Form.Control.Feedback type="invalid">
+                    {formik.errors.password}
+                  </Form.Control.Feedback>
                 </Form.Group>
 
                 <Button
                   type="submit"
                   variant="primary"
                   className="w-100 mb-3"
-                  disabled={formik.isSubmitting}
+                  disabled={formik.isSubmitting || !formik.isValid}
                 >
                   {formik.isSubmitting ? t('login.submitting') : t('login.submit')}
                 </Button>
 
                 <div className="text-center">
-                  <span className="text-muted">{t('login.noAccount')} </span>
-                  <Link to="/signup">{t('login.signup')}</Link>
+                  <span className="text-muted">
+                    {t('login.noAccount')}
+                    {' '}
+                  </span>
+                  <Link to="/signup" replace>{t('login.signup')}</Link>
                 </div>
               </Form>
-
-              <div className="mt-3 text-muted small text-center">
-                <p className="mb-1">{t('login.testCredentials')}</p>
-                <p className="mb-0">{t('login.username')}: admin, {t('login.password')}: admin</p>
-              </div>
             </Card.Body>
           </Card>
         </Col>
       </Row>
     </Container>
-  );
-};
+  )
+}
 
-export default LoginPage;
+export default LoginPage
