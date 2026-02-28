@@ -62,21 +62,20 @@ const ChatPage = () => {
   }
 
   return (
-    <div className="container-fluid h-100">
-      <div className="row h-100">
+    <div className="container h-100 my-4 overflow-hidden rounded shadow">
+      <div className="row h-100 bg-white flex-md-row">
         <ChannelsList />
 
-        <div className="col-8 d-flex flex-column h-100 p-0">
-          <div className="p-3 border-bottom">
-            <h5 className="mb-0 text-truncate">
+        <div className="col p-0 h-100">
+          <div className="d-flex flex-column h-100">
+            <h5 className="bg-light mb-4 p-3 shadow-sm small">
               {t('chat.currentChannel', {
                 channelName: currentChannel ? currentChannel.name : t('chat.noChannel'),
               })}
             </h5>
+            <MessagesList />
+            <MessageForm />
           </div>
-
-          <MessagesList />
-          <MessageForm />
         </div>
       </div>
 

@@ -23,8 +23,8 @@ const ChannelsList = () => {
   }
 
   return (
-    <div className="col-4 border-end vh-100 p-0 d-flex flex-column" style={{ minHeight: 0, backgroundColor: '#fff' }} data-testid="channels-list">
-      <div className="p-3 border-bottom d-flex justify-content-between align-items-center">
+    <div className="col-4 col-md-2 border-end px-0 bg-light flex-column h-100 d-flex" data-testid="channels-list">
+      <div className="d-flex mt-1 justify-content-between mb-2 ps-4 pe-2 p-4">
         <h5 className="mb-0">Каналы</h5>
         <Button
           variant="outline-primary"
@@ -38,7 +38,7 @@ const ChannelsList = () => {
         </Button>
       </div>
 
-      <div className="overflow-auto flex-grow-1" style={{ minHeight: 0 }}>
+      <div className="nav flex-column nav-pills nav-fill px-2 mb-3 overflow-auto h-100 d-block">
         {channels && Array.isArray(channels) && channels.length > 0
           ? (
               channels.map(channel => (

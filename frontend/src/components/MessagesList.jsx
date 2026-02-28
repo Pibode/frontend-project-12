@@ -13,7 +13,7 @@ const MessagesList = () => {
   )
 
   return (
-    <ListGroup variant="flush" className="flex-grow-1 overflow-auto p-3">
+    <ListGroup variant="flush" className="overflow-auto px-5">
       {channelMessages.map(message => (
         <ListGroup.Item key={message.id} className="border-0 px-0">
           <strong>

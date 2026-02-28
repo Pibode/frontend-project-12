@@ -1,5 +1,5 @@
 // frontend/src/components/MessageForm.jsx
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import { Form, Button, InputGroup, Spinner } from 'react-bootstrap'
 import { useTranslation } from 'react-i18next'
@@ -14,6 +14,7 @@ const MessageForm = () => {
   const [text, setText] = useState('')
   const [sending, setSending] = useState(false)
   const [isOnline, setIsOnline] = useState(navigator.onLine)
+  const inputRef = useRef(null)
   const dispatch = useDispatch()
   const { user } = useAuth()
   const currentChannelId = useSelector(state => state.channels.currentChannelId)
@@ -37,6 +38,12 @@ const MessageForm = () => {
       window.removeEventListener('offline', handleOffline)
     }
   }, [t])
+
+  useEffect(() => {
+    if (currentChannelId && isOnline && inputRef.current) {
+      inputRef.current.focus()
+    }
+  }, [currentChannelId, isOnline])
 
   const handleSubmit = async (e) => {
     e.preventDefault()
@@ -97,15 +104,20 @@ const MessageForm = () => {
     }
     finally {
       setSending(false)
+      if (inputRef.current) {
+        inputRef.current.focus()
+      }
     }
   }
 
   return (
-    <div className="p-3 border-top">
+    <div className="mt-auto px-5 py-3">
       <Form onSubmit={handleSubmit}>
         <InputGroup>
           <Form.Control
+            ref={inputRef}
             type="text"
+            autoComplete="off"
             placeholder={
               !isOnline
                 ? t('chat.offline')
@@ -115,7 +127,7 @@ const MessageForm = () => {
             }
             value={text}
             onChange={e => setText(e.target.value)}
-            disabled={sending || !currentChannelId || !isOnline}
+            disabled={!currentChannelId || !isOnline}
             aria-label="Новое сообщение"
           />
           <Button
@@ -144,7 +156,7 @@ const MessageForm = () => {
         </InputGroup>
 
         {!currentChannelId && isOnline && (
-          <Form.Text className="text-muted mt-2 d-block">
+          <Form.Text className="input-group has-validation">
             {t('chat.chooseChannel')}
           </Form.Text>
         )}

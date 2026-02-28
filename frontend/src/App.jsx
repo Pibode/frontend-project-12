@@ -34,23 +34,21 @@ function App() {
           <GlobalErrorHandler>
             <div className="d-flex flex-column h-100">
               <Header />
-              <div className="flex-grow-1 overflow-hidden">
-                <AppErrorBoundary>
-                  <Routes>
-                    <Route
-                      path="/"
-                      element={(
-                        <ProtectedRoute>
-                          <ChatPage />
-                        </ProtectedRoute>
-                      )}
-                    />
-                    <Route path="/login" element={<LoginPage />} />
-                    <Route path="/signup" element={<SignupPage />} />
-                    <Route path="*" element={<NotFoundPage />} />
-                  </Routes>
-                </AppErrorBoundary>
-              </div>
+              <AppErrorBoundary>
+                <Routes>
+                  <Route
+                    path="/"
+                    element={(
+                      <ProtectedRoute>
+                        <ChatPage />
+                      </ProtectedRoute>
+                    )}
+                  />
+                  <Route path="/login" element={<LoginPage />} />
+                  <Route path="/signup" element={<SignupPage />} />
+                  <Route path="*" element={<NotFoundPage />} />
+                </Routes>
+              </AppErrorBoundary>
             </div>
             <ToastContainer
               position="top-right"
